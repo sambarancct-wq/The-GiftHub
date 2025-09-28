@@ -1,146 +1,132 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-// src/pages/RegistrationPage.tsx
-import React, { useState } from 'react';
-import { authAPI } from '../services/api';
-import type { RegistrationPageProps, RegisterData } from '../types';
-import '../styles/AuthPage.css';
+import React, { useState } from "react";
+import { authAPI } from "../services/api";
+import type { RegistrationPageProps, RegisterData } from "../types";
+import "../styles/AuthPage.css";
 
 const RegistrationPage: React.FC<RegistrationPageProps> = ({ onSwitchToLogin }) => {
-  const [formData, setFormData] = useState<RegisterData & { confirmPassword: string }>({
-    username: '',
-    email: '',
-    password: '',
-    confirmPassword: ''
+  const [formData, setFormData] = useState<
+    RegisterData & { confirmPassword: string }
+  >({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
   });
-  const [message, setMessage] = useState<string>('');
-  const [isError, setIsError] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (formData.password !== formData.confirmPassword) {
-      setMessage('Passwords do not match');
-      setIsError(true);
+      alert("Passwords do not match");
       return;
     }
 
     if (formData.password.length < 6) {
-      setMessage('Password must be at least 6 characters long');
-      setIsError(true);
+      alert("Password must be at least 6 characters long");
       return;
     }
 
     setIsLoading(true);
-
     try {
-      const response = await authAPI.register({
-        username: formData.username,
+      await authAPI.register({
+        name: formData.name,
         email: formData.email,
-        password: formData.password
+        password: formData.password,
       });
-
-      setMessage('Registration successful! Please login.');
-      setIsError(false);
-      setFormData({ username: '', email: '', password: '', confirmPassword: '' });
       
       setTimeout(() => {
         onSwitchToLogin();
-      }, 2000);
-
+      }, 1000);
     } catch (error: any) {
-      const errorMessage = error.response?.data?.message || 'Registration failed';
-      setMessage(errorMessage);
-      setIsError(true);
+      alert(error.response?.data?.message || "Registration failed");
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="auth-container">
-      <div className="auth-card">
-        <h2>Create Your Account</h2>
+    <div className="auth-wrapper">
+      {/* Left Image Section */}
+      <div className="auth-left"></div>
+
+      {/* Right Form Section */}
+      <div className="auth-right">
+        <h2>
+          <span className="hello-text">Join,</span> Us!
+        </h2>
+
+        <div className="auth-tabs">
+          <span onClick={onSwitchToLogin}>Login</span>
+          <span className="active">SignUp</span>
+        </div>
+
         <form onSubmit={handleSubmit} className="auth-form">
-          <div className="form-group">
-            <label htmlFor="username">Username</label>
-            <input
-              type="text"
-              id="username"
-              name="username"
-              value={formData.username}
-              onChange={handleChange}
-              required
-              minLength={3}
-            />
-          </div>
+          <input
+            type="text"
+            name="name"
+            placeholder="Enter your username"
+            value={formData.name}
+            onChange={handleChange}
+            required
+          />
 
-          <div className="form-group">
-            <label htmlFor="email">Email</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-            />
-          </div>
+          <input
+            type="email"
+            name="email"
+            placeholder="Enter your email"
+            value={formData.email}
+            onChange={handleChange}
+            required
+          />
 
-          <div className="form-group">
-            <label htmlFor="password">Password</label>
+          <div className="password-input">
             <input
               type="password"
-              id="password"
               name="password"
+              placeholder="Enter Password"
               value={formData.password}
               onChange={handleChange}
               required
               minLength={6}
             />
+            <span className="eye-icon">👁</span>
           </div>
 
-          <div className="form-group">
-            <label htmlFor="confirmPassword">Confirm Password</label>
+          <div className="password-input">
             <input
               type="password"
-              id="confirmPassword"
               name="confirmPassword"
+              placeholder="Confirm Password"
               value={formData.confirmPassword}
               onChange={handleChange}
               required
             />
+            <span className="eye-icon">👁</span>
           </div>
 
-          <button 
-            type="submit" 
-            className="auth-button"
-            disabled={isLoading}
-          >
-            {isLoading ? 'Registering...' : 'Register'}
+          <button type="submit" disabled={isLoading}>
+            {isLoading ? "Registering..." : "Sign Up"}
           </button>
         </form>
 
-        {message && (
-          <div className={`message ${isError ? 'error' : 'success'}`}>
-            {message}
-          </div>
-        )}
+        <p className="or-text">Or</p>
 
-        <p className="switch-auth">
-          Already have an account?{' '}
-          <span className="auth-link" onClick={onSwitchToLogin}>
-            Sign In
-          </span>
-        </p>
+        <div className="social-login">
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png"
+            alt="Google"
+          />
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/5968/5968764.png"
+            alt="Facebook"
+          />
+        </div>
       </div>
     </div>
   );

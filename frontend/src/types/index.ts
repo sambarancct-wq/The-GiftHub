@@ -1,18 +1,18 @@
 // src/types/index.ts
 export interface User {
   id: number;
-  username: string;
+  name: string;
   email: string;
   password: string;
 }
 
 export interface LoginCredentials {
-  username: string;
+  email: string;
   password: string;
 }
 
 export interface RegisterData {
-  username: string;
+  name: string;
   email: string;
   password: string;
 }

@@ -1,26 +1,53 @@
-.auth-container {
-  min-height: 100vh;
+.auth-wrapper {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 20px;
-}
-
-.auth-card {
-  background: white;
-  padding: 40px;
-  border-radius: 10px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  height: 100vh;
   width: 100%;
-  max-width: 400px;
+  background: #f5f8fa;
 }
 
-.auth-card h2 {
-  text-align: center;
-  margin-bottom: 30px;
-  color: #333;
+.auth-left {
+  flex: 1;
+  background: url("../assets/flower-8625039_1280.png") no-repeat center;
+  background-size: cover;
+  border-radius: 0 20px 20px 0;
+}
+
+.auth-right {
+  flex: 0.5;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 40px 60px;
+  background: #fff;
+}
+
+.auth-right h2 {
   font-size: 28px;
+  margin-bottom: 10px;
+  color: #444;
+}
+
+.hello-text {
+  font-weight: 600;
+  color: #3a5a73;
+}
+
+.auth-tabs {
+  margin: 20px 0 30px;
+}
+
+.auth-tabs span {
+  margin-right: 20px;
+  font-size: 16px;
+  cursor: pointer;
+  color: #888;
+}
+
+.auth-tabs .active {
+  font-weight: bold;
+  color: #2c3e50;
+  border-bottom: 2px solid #2c3e50;
+  padding-bottom: 5px;
 }
 
 .auth-form {
@@ -28,77 +55,64 @@
   flex-direction: column;
 }
 
-.form-group {
-  margin-bottom: 20px;
-}
-
-.form-group label {
+.auth-form input {
   display: block;
-  margin-bottom: 5px;
-  color: #555;
-  font-weight: 500;
-}
-
-.form-group input {
-  width: 100%;
+  width: 100%;              /* Make all inputs equal width */
+  box-sizing: border-box;   /* Ensure padding doesn't reduce width */
+  margin-bottom: 20px;
   padding: 12px;
-  border: 2px solid #e1e5e9;
-  border-radius: 5px;
-  font-size: 16px;
-  transition: border-color 0.3s;
-}
-
-.form-group input:focus {
+  border: none;
+  border-bottom: 1px solid #ccc;
+  font-size: 15px;
   outline: none;
-  border-color: #667eea;
+  background: transparent;  /* Keep consistent with minimal design */
 }
 
-.auth-button {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+.auth-form input:focus {
+  border-bottom: 1px solid #3a5a73;
+}
+
+.password-input {
+  position: relative;
+}
+
+.eye-icon {
+  position: absolute;
+  right: 10px;
+  top: 12px;
+  font-size: 16px;
+  cursor: pointer;
+  color: #777;
+}
+
+.auth-form button {
+  background: #3a5a73;
+  color: #fff;
   padding: 12px;
   border: none;
   border-radius: 5px;
   font-size: 16px;
   cursor: pointer;
-  transition: transform 0.2s;
 }
 
-.auth-button:hover {
-  transform: translateY(-2px);
+.auth-form button:hover {
+  background: #2c3e50;
 }
 
-.message {
-  padding: 10px;
-  border-radius: 5px;
+.or-text {
+  text-align: center;
   margin: 20px 0;
-  text-align: center;
+  color: #aaa;
 }
 
-.message.success {
-  background-color: #d4edda;
-  color: #155724;
-  border: 1px solid #c3e6cb;
+.social-login {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
 }
 
-.message.error {
-  background-color: #f8d7da;
-  color: #721c24;
-  border: 1px solid #f5c6cb;
-}
-
-.switch-auth {
-  text-align: center;
-  margin-top: 20px;
-  color: #666;
-}
-
-.auth-link {
-  color: #667eea;
+.social-login img {
+  width: 32px;
+  height: 32px;
   cursor: pointer;
-  text-decoration: underline;
-}
-
-.auth-link:hover {
-  color: #764ba2;
 }

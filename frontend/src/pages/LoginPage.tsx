@@ -1,24 +1,21 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// src/pages/LoginPage.tsx
-import React, { useState } from 'react';
-import { authAPI } from '../services/api';
-import type { LoginPageProps, LoginCredentials } from '../types';
-import '../styles/AuthPage.css';
+import React, { useState } from "react";
+import { authAPI } from "../services/api";
+import type { LoginPageProps, LoginCredentials } from "../types";
+import "../styles/AuthPage.css";
 
-const LoginPage: React.FC<LoginPageProps> = ({ onSwitchToRegister, onLoginSuccess }) => {
+const LoginPage: React.FC<LoginPageProps> = ({
+  onSwitchToRegister,
+  onLoginSuccess,
+}) => {
   const [formData, setFormData] = useState<LoginCredentials>({
-    username: '',
-    password: ''
+    email: "",
+    password: "",
   });
-  const [message, setMessage] = useState<string>('');
-  const [isError, setIsError] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -27,73 +24,65 @@ const LoginPage: React.FC<LoginPageProps> = ({ onSwitchToRegister, onLoginSucces
 
     try {
       const response = await authAPI.login(formData);
-      
-      setMessage('Login successful!');
-      setIsError(false);
-      
       setTimeout(() => {
         onLoginSuccess(response.data);
-      }, 1000);
-
+      }, 800);
     } catch (error: any) {
-      const errorMessage = error.response?.data?.message || 'Login failed';
-      setMessage(errorMessage);
-      setIsError(true);
+      alert(error.response?.data?.message || "Login failed");
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="auth-container">
-      <div className="auth-card">
-        <h2>Welcome Back</h2>
-        <form onSubmit={handleSubmit} className="auth-form">
-          <div className="form-group">
-            <label htmlFor="username">Username</label>
-            <input
-              type="text"
-              id="username"
-              name="username"
-              value={formData.username}
-              onChange={handleChange}
-              required
-            />
-          </div>
+    <div className="auth-wrapper">
+      {/* Left Image Section */}
+      <div className="auth-left"></div>
 
-          <div className="form-group">
-            <label htmlFor="password">Password</label>
+      {/* Right Form Section */}
+      <div className="auth-right">
+        <h2>
+          <span className="hello-text">Hello,</span> Guyss!
+        </h2>
+
+        <div className="auth-tabs">
+          <span className="active">Login</span>
+          <span onClick={onSwitchToRegister}>SignUp</span>
+        </div>
+
+        <form onSubmit={handleSubmit} className="auth-form">
+          <input
+            type="email"
+            name="email"
+            placeholder="Enter your email"
+            value={formData.email}
+            onChange={handleChange}
+            required
+          />
+
+          <div className="password-input">
             <input
               type="password"
-              id="password"
               name="password"
+              placeholder="Enter Password"
               value={formData.password}
               onChange={handleChange}
               required
             />
+            <span className="eye-icon">👁</span>
           </div>
 
-          <button 
-            type="submit" 
-            className="auth-button"
-            disabled={isLoading}
-          >
-            {isLoading ? 'Signing In...' : 'Sign In'}
+          <button type="submit" disabled={isLoading}>
+            {isLoading ? "Signing In..." : "Login"}
           </button>
         </form>
 
-        {message && (
-          <div className={`message ${isError ? 'error' : 'success'}`}>
-            {message}
-          </div>
-        )}
+        <p className="or-text">Or</p>
 
-        <p className="switch-auth">
-          Don't have an account?{' '}
-          <span className="auth-link" onClick={onSwitchToRegister}>
-            Sign Up
-          </span>
-        </p>
+        <div className="social-login">
+          <img src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png" alt="Google" />
+          <img src="https://cdn-icons-png.flaticon.com/512/5968/5968764.png" alt="Facebook" />
+        </div>
       </div>
     </div>
   );
