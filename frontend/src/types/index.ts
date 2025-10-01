@@ -39,7 +39,6 @@ export interface LoginPageProps {
 
 export interface LandingPageProps {
   user: AuthResponse | null;
-  onLogout: () => void;
-  onNavigateToLogin: () => void;
-  onNavigateToRegister: () => void;
+  // Removed props: onLogout, onNavigateToLogin, onNavigateToRegister
+  // Navigation is now handled by the Navbar
 }

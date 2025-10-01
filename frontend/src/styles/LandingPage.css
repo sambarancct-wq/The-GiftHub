@@ -83,10 +83,14 @@
 }
 
 .hero-section {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #141315 0%, #323232 50%, #141315 100%);
   color: white;
   padding: 80px 20px;
   text-align: center;
+  min-height: calc(100vh - 70px); /* Adjust based on header height */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .hero-content h2 {
@@ -122,48 +126,129 @@
   background: rgba(255, 255, 255, 0.1);
   padding: 30px;
   border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(10px);
+  transition: transform 0.3s ease, background 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-10px);
+  background: rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+}
+
+/* --- Animation & Expanded Section Styles --- */
+
+@keyframes fade {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .features-section {
-  padding: 80px 20px;
-  max-width: 1200px;
-  margin: 0 auto;
+  padding: 100px 20px;
+  margin: 0; 
+  background: linear-gradient(135deg, #141315 0%, #323232 50%, #141315 100%);
+  color: #f0f0f0;
 }
 
 .features-section h3 {
   text-align: center;
-  font-size: 2.5rem;
-  margin-bottom: 50px;
-  color: #333;
+  font-size: 2.8rem;
+  margin-bottom: 60px;
+  color: #ffffff;
 }
 
 .features-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 40px;
+  display: flex;
+  flex-direction: column; 
+  align-items: center; 
+  gap: 60px; /* Increased gap for larger cards */
 }
 
+/* --- ✅ UPDATED CARD STYLES START HERE --- */
+
 .feature-item {
-  text-align: center;
-  padding: 30px;
+  /* Layout */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+
+  /* Sizing */
+  width: 90%; 
+  max-width: 850px; /* Increased max-width for bigger cards */
+  padding: 40px; /* Increased padding */
+  
+  /* Appearance */
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 15px; /* Slightly more rounded */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  
+  /* Animation (remains the same) */
+  animation: fade linear;
+  animation-timeline: view();
+  animation-range: entry 20% cover 60%;
+}
+
+.feature-text {
+  flex: 1; /* Allow text to take available space */
+  text-align: left; /* Align text to the left */
 }
 
 .feature-item h4 {
-  font-size: 1.3rem;
+  font-size: 1.8rem; /* Larger heading */
   margin-bottom: 15px;
-  color: #667eea;
+  color: #a7b2ff;
 }
 
 .feature-item p {
-  color: #666;
+  color: #cccccc;
   line-height: 1.6;
+  font-size: 1rem;
 }
 
+.feature-image {
+  width: 200px;
+  height: 200px;
+  border-radius: 10px;
+  object-fit: cover; /* Prevents image distortion */
+  background-color: #333; /* Fallback color */
+}
+
+/* --- Footer --- */
 .landing-footer {
-  background: #333;
+  background: #1a1a1a;
   color: white;
   text-align: center;
   padding: 20px;
   margin-top: auto;
+}
+
+/* --- Media Queries --- */
+@media (max-width: 768px) {
+  .hero-content h2 {
+    font-size: 2.5rem;
+  }
+  
+  .feature-item {
+      flex-direction: column; /* Stack image on top of text */
+      text-align: center; /* Center text when stacked */
+      padding: 30px;
+  }
+
+  .feature-text {
+      text-align: center; /* Ensure text inside is also centered */
+      margin-bottom: 20px; /* Add space between text and image */
+  }
+
+  .feature-image {
+    width: 150px; /* Make image a bit smaller on mobile */
+    height: 150px;
+  }
 }
