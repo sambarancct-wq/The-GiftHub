@@ -2,28 +2,90 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 2rem;
-  background-color: #f8f9fa;
+  padding: 0.5rem;
+  background-color: #1e7b92;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
 
 .navbar-logo {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #343a40;
+  font-size: 2.5rem;
+  color: #f6f8f8;
   cursor: pointer;
 }
 
 .navbar-links a {
   margin-left: 2rem;
   text-decoration: none;
-  color: #495057;
+  color: #f6f8f8;
   font-weight: 500;
   transition: color 0.2s ease-in-out;
 }
 
 .navbar-links a:hover {
-  color: #007bff;
+  text-decoration: underline;
+}
+
+.search-bar input{
+  width: 300px;
+  height: 35px;
+  border-radius: 15px;
+}
+
+/* Update the main navbar container */
+.navbar {
+  display: flex;
+  justify-content: space-between; /* Centers all child elements horizontally initially */
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: #1e7b92;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.navbar-logo {
+  flex-shrink: 0;
+}
+
+/* Style for the link container to add a gap between links */
+.page-links {
+  display: flex;
+  gap: 1rem; /* Creates space between the links */
+  margin: 0 auto;
+}
+
+/* Push the search bar and user menu to the right */
+.navbar-search,
+.navbar-user-menu {
+  /* margin-left: auto pushes the element to the far right */
+  margin-left: auto;
+}
+
+.navbar-user-menu {
+  margin-left: 2rem; /* Adds extra space between search and user menu */
+}
+
+.search-bar {
+  flex-shrink: 0;
+  margin-right: 1.5rem;
+}
+
+/* Style for the search bar (already defined, but shown for context) */
+.search-bar input {
+  width: 350px;
+  height: 30px;
+  border-radius: 15px;
+  border: none;
+  padding: 0 1rem;
+}
+
+.search-bar input:focus {
+  outline: none; /* Removes the default blue or black outline */
+  box-shadow: 0 0 5px rgba(30, 123, 146, 0.8); /* Adds a subtle shadow for focus */
 }
 
 .navbar-user-menu {
@@ -39,7 +101,7 @@
   gap: 0.5rem;
   font-size: 1rem;
   font-weight: bold;
-  color: #495057;
+  color: f8f9fa;
 }
 
 .dropdown-arrow {
@@ -62,7 +124,7 @@
   top: 100%;
   right: 0;
   margin-top: 0.5rem;
-  background-color: white;
+  background-color: #91beca;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
   min-width: 150px;

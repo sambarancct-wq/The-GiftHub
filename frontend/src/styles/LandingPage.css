@@ -83,8 +83,14 @@
 }
 
 .hero-section {
-  background: linear-gradient(135deg, #141315 0%, #323232 50%, #141315 100%);
-  color: white;
+  background-image: url("../assets/background1.png");
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  margin: 0; /* Removes default body margin */
+  height: 100vh; /* Ensures the body takes up the full viewport height */
+  color: #000000;
   padding: 80px 20px;
   text-align: center;
   min-height: calc(100vh - 70px); /* Adjust based on header height */
@@ -122,6 +128,12 @@
   margin-right: auto;
 }
 
+.search-bar input {
+  width: 350px;  /* Adjust the width as needed */
+  height: 50px;  /* Adjust the height as needed */
+  font-size: 16px; /* Adjust the font size to match */
+}
+
 .feature-card {
   background: rgba(255, 255, 255, 0.1);
   padding: 30px;
@@ -153,7 +165,7 @@
 .features-section {
   padding: 100px 20px;
   margin: 0; 
-  background: linear-gradient(135deg, #141315 0%, #323232 50%, #141315 100%);
+  background-color: #ffffff;
   color: #f0f0f0;
 }
 
@@ -161,7 +173,7 @@
   text-align: center;
   font-size: 2.8rem;
   margin-bottom: 60px;
-  color: #ffffff;
+  color: #1e7b92;
 }
 
 .features-grid {
@@ -186,7 +198,7 @@
   padding: 40px; /* Increased padding */
   
   /* Appearance */
-  background: rgba(255, 255, 255, 0.05);
+  background-color: #f0f0f0;
   border-radius: 15px; /* Slightly more rounded */
   border: 1px solid rgba(255, 255, 255, 0.1);
   
@@ -204,11 +216,11 @@
 .feature-item h4 {
   font-size: 1.8rem; /* Larger heading */
   margin-bottom: 15px;
-  color: #a7b2ff;
+  color: #1e7b92;
 }
 
 .feature-item p {
-  color: #cccccc;
+  color: #1e7b92;
   line-height: 1.6;
   font-size: 1rem;
 }
@@ -251,4 +263,150 @@
     width: 150px; /* Make image a bit smaller on mobile */
     height: 150px;
   }
+}
+
+/* --- INTRO CARDS --- */
+.intro-section {
+  text-align: center;
+  padding: 100px 20px;
+  background: #004e60;
+  color: white;
+  height: 100vh;
+}
+
+.intro-section h2 {
+  font-size: 2.5rem;
+  margin-bottom: 40px;
+}
+
+.intro-cards {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+}
+
+.intro-card {
+  background: white;
+  color: #222;
+  padding: 40px 30px;
+  border-radius: 15px;
+  width: 350px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+}
+
+.intro-card img {
+  width: 60px;
+  margin-bottom: 20px;
+}
+
+.intro-subtext {
+  font-size: 1.5rem;
+  margin: 20px 0;
+}
+
+.cta-btn {
+  background: #f9a825;
+  color: white;
+  border: none;
+  padding: 15px 40px;
+  border-radius: 30px;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.cta-btn:hover {
+  background: #e68900;
+}
+
+/* --- STORES SECTION --- */
+.stores-section {
+  padding: 100px 20px;
+  background: #fff;
+  text-align: center;
+  height: 100vh;
+}
+
+.stores-section h2 {
+  font-size: 2.5em;
+  font-weight: lighter;
+}
+
+.stores-overall {
+  display: flex;
+}
+
+.stores-content {
+  max-width: 1200px;
+  margin: auto;
+}
+
+.stores-content p {
+  max-width: 500px;
+  margin: 0 auto 40px auto;
+  line-height: 1.6;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.stores-grid {
+  background-image: url("../assets/background2.png");
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 25px;
+  margin-top: 40px;
+  justify-content: center; /* Centers the grid tracks horizontally */
+}
+
+.store-card {
+  background-image: url("../assets/background2.png");
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.store-card img {
+  max-width: 100%;
+  max-height: 60px;
+  object-fit: contain;
+}
+
+/* --- TESTIMONIALS --- */
+.testimonials-section {
+  background: #ddf5fb;
+  padding: 100px 20px;
+  text-align: center;
+}
+
+.testimonials-section h2{
+  font:3em sans-serif;
+}
+
+.testimonials-section p{
+  font: 1.5em italic
+}
+
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+  margin-top: 50px;
+}
+
+.testimonial {
+  background: white;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.testimonial p {
+  font-style: italic;
+  margin-bottom: 15px;
+}
+
+.testimonial span {
+  font-weight: bold;
+  color: #004e60;
 }

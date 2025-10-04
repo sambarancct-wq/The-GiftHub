@@ -47,7 +47,7 @@ const LoginPage: React.FC<LoginPageProps> = ({
 
         <div className="auth-tabs">
           <span className="active">Login</span>
-          <span onClick={onSwitchToRegister}>SignUp</span>
+          <span onClick={onSwitchToRegister}>Signup</span>
         </div>
 
         <form onSubmit={handleSubmit} className="auth-form">

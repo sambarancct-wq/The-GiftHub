@@ -56,17 +56,29 @@ const Navbar: React.FC<NavbarProps> = ({
       </div>
       <div className="navbar-links">
         {user ? (
-          <>
-            <a href="#" onClick={onNavigateToGiftAdd}>Add Gift</a>
-            <a href="#" onClick={onNavigateToEventAdd}>Add Event</a>
-            <a href="#" onClick={onNavigateToGiftList}>Gift List</a>
-            <a href="#" onClick={onNavigateToEventList}>Event List</a>
-          </>
+          <div className='nav-container'>
+            <div className='page-links'>
+              <a href="#" onClick={onNavigateToGiftAdd}>Add Gift</a>
+              <a href="#" onClick={onNavigateToEventAdd}>Add Event</a>
+              <a href="#" onClick={onNavigateToGiftList}>Gift List</a>
+              <a href="#" onClick={onNavigateToEventList}>Event List</a>
+            </div>
+          </div>
         ) : ( // <-- Add else block for non-logged-in users
           <>
             <a href="#" onClick={onNavigateToLogin}>Login</a>
             <a href="#" onClick={onNavigateToRegister}>Register</a>
           </>
+        )}
+      </div>
+      <div className='navbar-search'>
+        {user && (
+        <div className="search-bar">
+          <input placeholder="Search for Registry or Gift List"></input>
+          <button type="submit">
+            <i className="fa fa-search"></i>
+          </button>
+        </div>
         )}
       </div>
       {user && ( // Only show user menu if a user is logged in
