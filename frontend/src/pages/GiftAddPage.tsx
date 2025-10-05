@@ -1,37 +1,73 @@
 import { useState } from "react";
 import '../styles/GiftAddPage.css';
 
-interface Gift{
-    id: number,
-    name: string,
-    recipient: string,
+// This interface now represents the data we will SEND to the API.
+// The 'id' is removed as the database will generate it.
+interface NewGiftPayload {
+    name: string;
+    recipient: string;
     notes?: string;
 }
 
-interface GiftInventoryProps {
+interface GiftAddPageProps {
   onReturnToLanding: () => void;
 }
 
-const GiftAddPage: React.FC<GiftInventoryProps> = ({onReturnToLanding}) => {
-    const [gifts,setGifts] = useState<Gift[]>([]);
-    // State for the form inputs
-    const [giftName, setGiftName] = useState<string>('');
-    const [recipientName, setRecipientName] = useState<string>('');
-    const [giftNotes, setGiftNotes] = useState<string>('');
+const GiftAddPage: React.FC<GiftAddPageProps> = ({ onReturnToLanding }) => {
+  // 1. State for the form inputs (these are necessary)
+  const [giftName, setGiftName] = useState<string>('');
+  const [recipientName, setRecipientName] = useState<string>('');
+  const [giftNotes, setGiftNotes] = useState<string>('');
 
-    const handleAddGift = (e: React.FormEvent) => {
-    e.preventDefault(); // Prevent page reload on form submission
-    if (giftName.trim() && recipientName.trim()) {
-      const newGift: Gift = {
-        id: Date.now(), // Use a unique ID (e.g., timestamp)
-        name: giftName,
-        recipient: recipientName,
-        notes: giftNotes,
-      };
-      setGifts([...gifts, newGift]); // Add the new gift to the list
-      setGiftName(''); // Clear the form inputs
+  // 2. State for handling the API request status
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // 3. The form submission handler is now an async function
+  const handleAddGift = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError(null);
+
+    // Prepare the data payload to send to the API
+    const newGift: NewGiftPayload = {
+      name: giftName,
+      recipient: recipientName,
+      notes: giftNotes,
+    };
+
+    try {
+      // Send the data to your backend endpoint
+      const response = await fetch('http://localhost:5000/api/gifts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newGift),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to add gift');
+      }
+
+      // Handle success
+      alert('Gift added successfully!');
+      
+      // Clear the form inputs after successful submission
+      setGiftName('');
       setRecipientName('');
       setGiftNotes('');
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      // Handle any errors during the fetch
+      setError(err.message);
+      console.error('Failed to submit gift:', err);
+
+    } finally {
+      // This runs whether the request succeeded or failed
+      setIsLoading(false);
     }
   };
 
@@ -48,6 +84,7 @@ const GiftAddPage: React.FC<GiftInventoryProps> = ({onReturnToLanding}) => {
             value={giftName}
             onChange={(e) => setGiftName(e.target.value)}
             required
+            disabled={isLoading} // Disable input while loading
           />
         </div>
         <div className="form-group">
@@ -58,6 +95,7 @@ const GiftAddPage: React.FC<GiftInventoryProps> = ({onReturnToLanding}) => {
             value={recipientName}
             onChange={(e) => setRecipientName(e.target.value)}
             required
+            disabled={isLoading} // Disable input while loading
           />
         </div>
         <div className="form-group">
@@ -66,26 +104,20 @@ const GiftAddPage: React.FC<GiftInventoryProps> = ({onReturnToLanding}) => {
             id="gift-notes"
             value={giftNotes}
             onChange={(e) => setGiftNotes(e.target.value)}
+            disabled={isLoading} // Disable input while loading
           />
         </div>
-        <button type="submit">Add Gift</button>
+        {/* The button now shows a loading state and is disabled during submission */}
+        <button type="submit" disabled={isLoading}>
+          {isLoading ? 'Adding...' : 'Add Gift'}
+        </button>
+        {/* Display an error message if the submission fails */}
+        {error && <p className="error-message">{error}</p>}
       </form>
 
-      <div className="gifts-list-container">
-        <h3>Gift List</h3>
-        {gifts.length === 0 ? (
-          <p>No gifts added yet.</p>
-        ) : (
-          <ul className="gifts-list">
-            {gifts.map((gift) => (
-              <li key={gift.id} className="gift-item">
-                <strong>{gift.name}</strong> for {gift.recipient}
-                {gift.notes && <span className="gift-notes"> ({gift.notes})</span>}
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+      {/* The gift list display has been removed from this component.
+        This component's only job is now to ADD a gift.
+      */}
     </div>
   );
 }

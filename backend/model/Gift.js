@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 const Schema = mongoose.Schema;
 
 const GiftStatus = ["Available", "Reserved", "Purchased"];
@@ -14,11 +14,10 @@ const giftSchema = new Schema({
   },
   event: {
     type: Schema.Types.ObjectId,
-    ref: "Event", 
-    required: true,
+    ref: "Event",
   },
 }, { timestamps: true });
 
 const Gift = mongoose.model("Gift", giftSchema);
 
-module.exports = Gift;
+export default Gift;

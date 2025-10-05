@@ -1,58 +1,113 @@
+/* GiftAddPage.css */
+
+/* --- Overall Page Layout and Container --- */
+body {
+  background-color: #eef1f5; /* Light, calming background */
+}
+
 .gift-inventory-container {
-  max-width: 600px;
+  max-width: 700px;
   margin: 40px auto;
-  padding: 20px;
-  background-color: #f9f9f9;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  font-family: Arial, sans-serif;
+  padding: 40px;
+  background-color: #ffffff; /* Clean white background */
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08); /* Softer, more modern shadow */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .gift-inventory-container h2 {
   text-align: center;
   color: #333;
+  margin-bottom: 30px;
+  font-size: 2rem;
+  font-weight: 600;
 }
 
+/* --- Form Styling --- */
 .gift-form {
   display: flex;
   flex-direction: column;
-  gap: 15px;
-  margin-bottom: 20px;
+  gap: 20px;
+  margin-bottom: 30px;
 }
 
 .form-group label {
   display: block;
-  margin-bottom: 5px;
-  font-weight: bold;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #555;
 }
 
 .form-group input,
 .form-group textarea {
   width: 100%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box; /* Ensures padding doesn't affect total width */
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-sizing: border-box;
+  font-size: 1rem;
+  transition: all 0.3s ease; /* Smooth transition for focus effect */
 }
 
-.gift-form button {
+.form-group input:focus,
+.form-group textarea:focus {
+  border-color: #1e7b92; /* Highlight border on focus */
+  box-shadow: 0 0 0 3px rgba(30, 123, 146, 0.2); /* Soft inner shadow for focus */
+  outline: none;
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+/* Add Gift Button */
+.gift-form button[type="submit"] {
   padding: 12px 20px;
-  background-color: #007bff;
+  background-color: #1e7b92;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
 }
 
-.gift-form button:hover {
-  background-color: #0056b3;
+.gift-form button[type="submit"]:hover {
+  background-color: #165e6d;
+}
+
+/* --- Back Button --- */
+.gift-inventory-container > button {
+  padding: 8px 15px;
+  background: transparent;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #555;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  margin-bottom: 20px;
+  display: block;
+}
+
+.gift-inventory-container > button:hover {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+/* --- Gift List Display --- */
+.gifts-list-container {
+  margin-top: 40px;
 }
 
 .gifts-list-container h3 {
-  border-bottom: 2px solid #ddd;
+  border-bottom: 2px solid #e0e0e0;
   padding-bottom: 10px;
-  margin-bottom: 15px;
+  margin-bottom: 20px;
+  color: #444;
+  font-size: 1.5rem;
 }
 
 .gifts-list {
@@ -61,14 +116,37 @@
 }
 
 .gift-item {
-  background-color: #e9ecef;
-  padding: 10px;
-  border-radius: 4px;
-  margin-bottom: 10px;
+  background-color: #f0f3f6;
+  padding: 15px;
+  border-left: 4px solid #1e7b92;
+  border-radius: 8px;
+  margin-bottom: 15px;
   word-wrap: break-word;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.gift-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.gift-item strong {
+  color: #1e7b92;
 }
 
 .gift-notes {
-  color: #666;
+  color: #777;
   font-style: italic;
+  display: block;
+  margin-top: 5px;
+}
+
+/* Placeholder for empty list */
+.gifts-list-container p {
+  text-align: center;
+  color: #888;
+  font-style: italic;
+  padding: 20px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
 }
