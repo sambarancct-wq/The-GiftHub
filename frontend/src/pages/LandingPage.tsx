@@ -1,8 +1,9 @@
-import React from 'react';
-import type { LandingPageProps } from '../types';
+import { FaSearch } from 'react-icons/fa';
 import '../styles/LandingPage.css';
+import type { LandingPageProps } from '../types';
 
-const LandingPage: React.FC<LandingPageProps> = ({ user }) => {
+// The correct way to declare a functional component with destructured props
+const LandingPage = ({ user }: LandingPageProps ) => {
   return (
     <div className="landing-container">
       <main className="landing-main">
@@ -17,7 +18,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ user }) => {
                 <div className="search-bar">
                   <input placeholder="Search for Registry or Gift List"></input>
                   <button type="submit">
-                    <i className="fa fa-search"></i>
+                    <FaSearch/>
                   </button>
                 </div>
               </div>
@@ -93,7 +94,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ user }) => {
       </main>
 
       <footer className="landing-footer">
-        <p>&copy; 2024 Gift Planner</p>
+        <p>&copy; 2025 Gift Planner</p>
       </footer>
     </div>
   );

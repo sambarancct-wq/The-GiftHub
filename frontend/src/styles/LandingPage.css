@@ -134,6 +134,19 @@
   font-size: 16px; /* Adjust the font size to match */
 }
 
+.search-bar button {
+  background-color: #1e7b92;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 0.5rem;
+  font-weight: 600;
+  font-size: 1.05rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 10px rgba(30, 123, 146, 0.3);
+}
+
 .feature-card {
   background: rgba(255, 255, 255, 0.1);
   padding: 30px;
@@ -351,7 +364,6 @@
 }
 
 .stores-grid {
-  background-image: url("../assets/background2.png");
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   gap: 25px;

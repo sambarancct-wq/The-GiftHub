@@ -1,19 +1,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import { authAPI } from "../services/api";
-import type { RegistrationPageProps, RegisterData } from "../types";
+import type { RegisterData } from "../types";
 import "../styles/AuthPage.css";
 
-const RegistrationPage: React.FC<RegistrationPageProps> = ({ onSwitchToLogin }) => {
-  const [formData, setFormData] = useState<
-    RegisterData & { confirmPassword: string }
-  >({
+const RegistrationPage: React.FC = () => {
+  const [formData, setFormData] = useState<RegisterData & { confirmPassword: string }>({
     name: "",
     email: "",
     password: "",
     confirmPassword: "",
   });
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -39,10 +39,9 @@ const RegistrationPage: React.FC<RegistrationPageProps> = ({ onSwitchToLogin }) 
         email: formData.email,
         password: formData.password,
       });
-      
-      setTimeout(() => {
-        onSwitchToLogin();
-      }, 1000);
+
+      alert("Registration successful!");
+      setTimeout(() => navigate("/login"), 1000);
     } catch (error: any) {
       alert(error.response?.data?.message || "Registration failed");
     } finally {
@@ -62,7 +61,7 @@ const RegistrationPage: React.FC<RegistrationPageProps> = ({ onSwitchToLogin }) 
         </h2>
 
         <div className="auth-tabs">
-          <span onClick={onSwitchToLogin}>Login</span>
+          <Link to="/login" className="inactive-tab">Login</Link>
           <span className="active">SignUp</span>
         </div>
 

@@ -1,4 +1,6 @@
 // src/types/index.ts
+
+// 🧑‍💻 Basic User-related types
 export interface User {
   id: number;
   name: string;
@@ -17,6 +19,7 @@ export interface RegisterData {
   password: string;
 }
 
+// 🪪 Auth responses and error handling
 export interface AuthResponse {
   message: string;
   userId?: number;
@@ -27,18 +30,24 @@ export interface ApiError {
   message: string;
 }
 
-// Props interfaces for components
-export interface RegistrationPageProps {
-  onSwitchToLogin: () => void;
-}
+// 🧩 Props interfaces for pages & components
 
+// ✅ Registration Page
+// No need for navigation props anymore (React Router handles it)
+//export interface RegistrationPageProps {}
+
+// ✅ Login Page
 export interface LoginPageProps {
-  onSwitchToRegister: () => void;
   onLoginSuccess: (userData: AuthResponse) => void;
 }
 
+// ✅ Landing Page
 export interface LandingPageProps {
   user: AuthResponse | null;
-  // Removed props: onLogout, onNavigateToLogin, onNavigateToRegister
-  // Navigation is now handled by the Navbar
+}
+
+// ✅ Navbar Component
+export interface NavbarProps {
+  user: AuthResponse | null;
+  onLogout: () => void;
 }

@@ -4,9 +4,28 @@ const Schema = mongoose.Schema;
 const GiftStatus = ["Available", "Reserved", "Purchased"];
 
 const giftSchema = new Schema({
-  name: { type: String, required: true },
-  recipient: { type: String, required: true },
-  notes: { type: String },
+  name: { 
+    type: String, 
+    required: true, 
+    trim: true
+  },
+  recipient: { 
+    type: String, 
+    required: true,
+    trim: true 
+  },
+  notes: { 
+    type: String,
+    trim: true 
+  },
+  price: { 
+    type: Number, 
+    required:true,
+    min: 0
+  },
+  image: { 
+    type: String
+  },
   status: {
     type: String,
     enum: GiftStatus, 

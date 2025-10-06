@@ -1,22 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { authAPI } from "../services/api";
 import type { LoginPageProps, LoginCredentials } from "../types";
 import "../styles/AuthPage.css";
 
-const LoginPage: React.FC<LoginPageProps> = ({
-  onSwitchToRegister,
-  onLoginSuccess,
-}) => {
-  const [formData, setFormData] = useState<LoginCredentials>({
-    email: "",
-    password: "",
-  });
+const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
+  const [formData, setFormData] = useState<LoginCredentials>({ email: "", password: "" });
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const navigate = useNavigate();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,9 +19,8 @@ const LoginPage: React.FC<LoginPageProps> = ({
 
     try {
       const response = await authAPI.login(formData);
-      setTimeout(() => {
-        onLoginSuccess(response.data);
-      }, 800);
+      onLoginSuccess(response.data);
+      navigate("/"); // Redirect after login
     } catch (error: any) {
       alert(error.response?.data?.message || "Login failed");
     } finally {
@@ -36,10 +30,8 @@ const LoginPage: React.FC<LoginPageProps> = ({
 
   return (
     <div className="auth-wrapper">
-      {/* Left Image Section */}
       <div className="auth-left"></div>
 
-      {/* Right Form Section */}
       <div className="auth-right">
         <h2>
           <span className="hello-text">Hello,</span> Guyss!
@@ -47,7 +39,7 @@ const LoginPage: React.FC<LoginPageProps> = ({
 
         <div className="auth-tabs">
           <span className="active">Login</span>
-          <span onClick={onSwitchToRegister}>Signup</span>
+          <Link to="/register" className="inactive-tab">Signup</Link>
         </div>
 
         <form onSubmit={handleSubmit} className="auth-form">
@@ -59,7 +51,6 @@ const LoginPage: React.FC<LoginPageProps> = ({
             onChange={handleChange}
             required
           />
-
           <div className="password-input">
             <input
               type="password"
@@ -71,7 +62,6 @@ const LoginPage: React.FC<LoginPageProps> = ({
             />
             <span className="eye-icon">👁</span>
           </div>
-
           <button type="submit" disabled={isLoading}>
             {isLoading ? "Signing In..." : "Login"}
           </button>

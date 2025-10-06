@@ -1,40 +1,25 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import type { AuthResponse } from '../types';
 import '../styles/Navbar.css';
+import { FaSearch } from 'react-icons/fa';
 
 interface NavbarProps {
   user: AuthResponse | null;
   onLogout: () => void;
-  onNavigateToGiftAdd: () => void;
-  onNavigateToEventAdd: () => void;
-  onNavigateToGiftList: () => void;
-  onNavigateToEventList: () => void;
-  onNavigateToLanding: () => void;
-  onNavigateToLogin: () => void;      // <-- Add this new prop
-  onNavigateToRegister: () => void;  // <-- Add this new prop
 }
 
-const Navbar: React.FC<NavbarProps> = ({
-  user,
-  onLogout,
-  onNavigateToGiftAdd,
-  onNavigateToEventAdd,
-  onNavigateToGiftList,
-  onNavigateToEventList,
-  onNavigateToLanding,
-  onNavigateToLogin,      // <-- Destructure the new prop
-  onNavigateToRegister,   // <-- Destructure the new prop
-}) => {
+const Navbar: React.FC<NavbarProps> = ({ user, onLogout }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
 
-  const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen);
-  };
+  const toggleDropdown = () => setIsDropdownOpen((prev) => !prev);
 
   const handleLogoutClick = () => {
     onLogout();
     setIsDropdownOpen(false);
+    navigate('/'); // Redirect to home after logout
   };
 
   useEffect(() => {
@@ -44,44 +29,45 @@ const Navbar: React.FC<NavbarProps> = ({
       }
     };
     document.addEventListener('mousedown', handleOutsideClick);
-    return () => {
-      document.removeEventListener('mousedown', handleOutsideClick);
-    };
+    return () => document.removeEventListener('mousedown', handleOutsideClick);
   }, []);
 
   return (
     <nav className="navbar">
-      <div className="navbar-logo" onClick={onNavigateToLanding}>
+      <div className="navbar-logo" onClick={() => navigate('/')}>
         GiftHub
       </div>
+
       <div className="navbar-links">
         {user ? (
-          <div className='nav-container'>
-            <div className='page-links'>
-              <a href="#" onClick={onNavigateToGiftAdd}>Add Gift</a>
-              <a href="#" onClick={onNavigateToEventAdd}>Add Event</a>
-              <a href="#" onClick={onNavigateToGiftList}>Gift List</a>
-              <a href="#" onClick={onNavigateToEventList}>Event List</a>
+          <div className="nav-container">
+            <div className="page-links">
+              <Link to="/gift/add">Add Gift</Link>
+              <Link to="/event/add">Add Event</Link>
+              <Link to="/gift/list">Gift List</Link>
+              <Link to="/event/list">Event List</Link>
             </div>
           </div>
-        ) : ( // <-- Add else block for non-logged-in users
+        ) : (
           <>
-            <a href="#" onClick={onNavigateToLogin}>Login</a>
-            <a href="#" onClick={onNavigateToRegister}>Register</a>
+            <Link to="/login">Login</Link>
+            <Link to="/register">Register</Link>
           </>
         )}
       </div>
-      <div className='navbar-search'>
-        {user && (
-        <div className="search-bar">
-          <input placeholder="Search for Registry or Gift List"></input>
-          <button type="submit">
-            <i className="fa fa-search"></i>
-          </button>
+
+      {user && (
+        <div className="navbar-search">
+          <div className="search-bar">
+            <input placeholder="Search for Registry or Gift List" />
+            <button type="submit" className='search-btn'>
+              <FaSearch/>
+            </button>
+          </div>
         </div>
-        )}
-      </div>
-      {user && ( // Only show user menu if a user is logged in
+      )}
+
+      {user && (
         <div className="navbar-user-menu" ref={dropdownRef}>
           <button className="navbar-user-button" onClick={toggleDropdown}>
             {user.username || 'User'}
@@ -89,9 +75,13 @@ const Navbar: React.FC<NavbarProps> = ({
           </button>
           {isDropdownOpen && (
             <div className="navbar-dropdown">
-              <a href="#" onClick={() => { /* Profile page logic here */ setIsDropdownOpen(false); }}>Profile Page</a>
+              <Link to="/profile" onClick={() => setIsDropdownOpen(false)}>
+                Profile Page
+              </Link>
               <div className="dropdown-divider"></div>
-              <a href="#" onClick={handleLogoutClick}>Logout</a>
+              <button className="logout-btn" onClick={handleLogoutClick}>
+                Logout
+              </button>
             </div>
           )}
         </div>

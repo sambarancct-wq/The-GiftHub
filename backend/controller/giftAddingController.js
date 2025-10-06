@@ -2,11 +2,11 @@ import Gift from "../model/Gift.js";
 
 export const addGift = async(req,res) => {
     try {
-        const {name,recipient} = req.body;
+        const {name,recipient,price} = req.body;
         
-        if(!name || !recipient){
+        if(!name || !recipient || price){
             return res.status(400).json({
-                message:"name or recipient are necessary"
+                message:"name ,recipient and price are necessary"
             });
         }
 
