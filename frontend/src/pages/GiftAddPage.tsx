@@ -1,14 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/GiftAddPage.css";
-
-interface NewGiftPayload {
-  name: string;
-  recipient: string;
-  notes?: string;
-  price: number;
-  image?: string | null; // Base64 image
-}
+import { giftAPI, type NewGiftPayload } from "../services/api";
 
 const GiftAddPage: React.FC = () => {
   const [giftName, setGiftName] = useState("");
@@ -44,22 +37,18 @@ const GiftAddPage: React.FC = () => {
     };
 
     try {
-      const response = await fetch("http://localhost:5000/api/gifts", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newGift),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to add gift");
-      }
-
+      console.log("🧾 New Gift Payload:", newGift);
+      await giftAPI.addGift(newGift);
       alert("🎁 Gift added successfully!");
-      navigate("/");
+      setGiftName("");
+      setGiftNotes("");
+      setImage(null);
+      setPrice(500);
+      setRecipientName("");
+      navigate("/gift/add");
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
-      setError(err.message);
+      setError(err.response?.data?.message || "Failed to add gift");
     } finally {
       setIsLoading(false);
     }

@@ -3,9 +3,36 @@
 // 🧑‍💻 Basic User-related types
 export interface User {
   id: number;
-  name: string;
   email: string;
   password: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Event {
+  id: number;
+  name: string;
+  date: string;
+  organizer: User;
+  description: string;
+  location?: string;
+  type: 'BIRTHDAY' | 'WEDDING' | 'HOLIDAY' | 'ANNIVERSARY' | 'OTHER';
+  createdAt: string;
+  updatedAt: string;
+}
+
+
+export interface Gift {
+  id: number;
+  name: string;
+  recipient: string;
+  notes?: string;
+  price: number;
+  image?: string;
+  status: 'AVAILABLE' | 'RESERVED' | 'PURCHASED';
+  event?: Event;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface LoginCredentials {
@@ -14,7 +41,6 @@ export interface LoginCredentials {
 }
 
 export interface RegisterData {
-  name: string;
   email: string;
   password: string;
 }
@@ -24,6 +50,7 @@ export interface AuthResponse {
   message: string;
   userId?: number;
   username?: string;
+  email?: string;
 }
 
 export interface ApiError {

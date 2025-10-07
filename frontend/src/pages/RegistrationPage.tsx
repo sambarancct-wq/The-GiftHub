@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+// src/pages/RegistrationPage.tsx
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { authAPI } from "../services/api";
@@ -7,7 +7,6 @@ import "../styles/AuthPage.css";
 
 const RegistrationPage: React.FC = () => {
   const [formData, setFormData] = useState<RegisterData & { confirmPassword: string }>({
-    name: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -35,13 +34,13 @@ const RegistrationPage: React.FC = () => {
     setIsLoading(true);
     try {
       await authAPI.register({
-        name: formData.name,
         email: formData.email,
         password: formData.password,
       });
 
-      alert("Registration successful!");
+      alert("Registration successful! Please login.");
       setTimeout(() => navigate("/login"), 1000);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       alert(error.response?.data?.message || "Registration failed");
     } finally {
@@ -51,10 +50,8 @@ const RegistrationPage: React.FC = () => {
 
   return (
     <div className="auth-wrapper">
-      {/* Left Image Section */}
       <div className="auth-left"></div>
 
-      {/* Right Form Section */}
       <div className="auth-right">
         <h2>
           <span className="hello-text">Join,</span> Us!
@@ -66,15 +63,6 @@ const RegistrationPage: React.FC = () => {
         </div>
 
         <form onSubmit={handleSubmit} className="auth-form">
-          <input
-            type="text"
-            name="name"
-            placeholder="Enter your username"
-            value={formData.name}
-            onChange={handleChange}
-            required
-          />
-
           <input
             type="email"
             name="email"

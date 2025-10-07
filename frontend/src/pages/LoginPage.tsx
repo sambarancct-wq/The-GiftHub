@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+// src/pages/LoginPage.tsx
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { authAPI } from "../services/api";
@@ -6,7 +6,10 @@ import type { LoginPageProps, LoginCredentials } from "../types";
 import "../styles/AuthPage.css";
 
 const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
-  const [formData, setFormData] = useState<LoginCredentials>({ email: "", password: "" });
+  const [formData, setFormData] = useState<LoginCredentials>({ 
+    email: "", 
+    password: "" 
+  });
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const navigate = useNavigate();
 
@@ -21,6 +24,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
       const response = await authAPI.login(formData);
       onLoginSuccess(response.data);
       navigate("/"); // Redirect after login
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       alert(error.response?.data?.message || "Login failed");
     } finally {
