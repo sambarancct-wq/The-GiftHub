@@ -6,6 +6,7 @@ import GiftAddPage from './pages/GiftAddPage';
 import Navbar from './components/Navbar';
 import { useState } from 'react';
 import type { AuthResponse } from './types';
+import GiftListPage from './pages/GiftListPage';
 
 // Main App Component
 function App() {
@@ -45,7 +46,7 @@ function AppContent({
         <Route path="/login" element={<LoginPage onLoginSuccess={onLoginSuccess} />} />
         <Route path="/gift/add" element={<GiftAddPage />} />
         <Route path="/event/add" element={<div>Add Event Page</div>} />
-        <Route path="/gift/list" element={<div>Gift List Page</div>} />
+        <Route path="/gift/list" element={ <GiftListPage/>} />
         <Route path="/event/list" element={<div>Event List Page</div>} />
         {/* Redirect unknown routes */}
         <Route path="*" element={<Navigate to="/" replace />} />

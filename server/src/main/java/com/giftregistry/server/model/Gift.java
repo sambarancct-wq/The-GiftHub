@@ -18,11 +18,13 @@ public class Gift {
     @Column(nullable = false)
     private String recipient;
     
+    @Column(length = 1000)
     private String notes;
     
     @Column(nullable = false)
     private BigDecimal price;
     
+    @Column(columnDefinition = "TEXT")
     private String image;
     
     @Enumerated(EnumType.STRING)

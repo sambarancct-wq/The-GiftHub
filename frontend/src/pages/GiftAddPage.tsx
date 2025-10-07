@@ -1,14 +1,15 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/GiftAddPage.css";
-import { giftAPI, type NewGiftPayload } from "../services/api";
+import { giftAPI } from "../services/api";
 
 const GiftAddPage: React.FC = () => {
   const [giftName, setGiftName] = useState("");
   const [recipientName, setRecipientName] = useState("");
   const [giftNotes, setGiftNotes] = useState("");
   const [price, setPrice] = useState(500);
-  const [image, setImage] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -17,10 +18,8 @@ const GiftAddPage: React.FC = () => {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
-    const reader = new FileReader();
-    reader.onloadend = () => setImage(reader.result as string);
-    reader.readAsDataURL(file);
+    setImageFile(file);
+    setPreview(URL.createObjectURL(file));
   };
 
   const handleAddGift = async (e: React.FormEvent) => {
@@ -28,23 +27,23 @@ const GiftAddPage: React.FC = () => {
     setIsLoading(true);
     setError(null);
 
-    const newGift: NewGiftPayload = {
-      name: giftName,
-      recipient: recipientName,
-      notes: giftNotes,
-      price,
-      image,
-    };
+    const formData = new FormData();
+    formData.append("name", giftName);
+    formData.append("recipient", recipientName);
+    formData.append("notes", giftNotes);
+    formData.append("price", price.toString());
+    if (imageFile) formData.append("image", imageFile);
 
     try {
-      console.log("🧾 New Gift Payload:", newGift);
-      await giftAPI.addGift(newGift);
-      alert("🎁 Gift added successfully!");
+      const response = await giftAPI.addGift(formData);
+      console.log("✅ Gift Added:", response);
+      alert(response.data.message);
       setGiftName("");
       setGiftNotes("");
-      setImage(null);
       setPrice(500);
       setRecipientName("");
+      setImageFile(null);
+      setPreview(null);
       navigate("/gift/add");
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
@@ -102,9 +101,9 @@ const GiftAddPage: React.FC = () => {
           <div className="form-group">
             <label>Gift Picture</label>
             <input type="file" accept="image/*" onChange={handleImageChange} />
-            {image && (
+            {preview && (
               <div className="image-preview">
-                <img src={image} alt="Preview" />
+                <img src={preview} alt="Preview" />
               </div>
             )}
           </div>

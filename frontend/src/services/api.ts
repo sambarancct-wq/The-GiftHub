@@ -1,33 +1,41 @@
-// src/services/api.ts
 import axios from 'axios';
 
 const API_BASE_URL = 'http://localhost:8080/api';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  withCredentials: false, // Set to false to avoid session issues
+  withCredentials: false, // keep false unless you use sessions
 });
 
-// Auth API calls
+// 🔹 Auth API
 export const authAPI = {
-  login: (credentials: { email: string; password: string }) => 
-    api.post('/login', credentials),
-  
-  register: (userData: { email: string; password: string }) => 
-    api.post('/register', userData),
+  login: (credentials: { email: string; password: string }) =>
+    api.post('/login', credentials, {
+      headers: { 'Content-Type': 'application/json' },
+    }),
+
+  register: (userData: { email: string; password: string }) =>
+    api.post('/register', userData, {
+      headers: { 'Content-Type': 'application/json' },
+    }),
 };
 
-// Gift API calls
+// 🔹 Gift API
 export const giftAPI = {
   getAllGifts: () => api.get('/gifts'),
   getGiftById: (id: number) => api.get(`/gifts/${id}`),
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  addGift: (giftData: any) => api.post('/gifts', giftData),
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  updateGift: (id: number, giftData: any) => api.put(`/gifts/${id}`, giftData),
+
+  // 🔹 FormData (multipart/form-data)
+  addGift: (formData: FormData) =>
+    api.post('/gifts', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }),
+
+  updateGift: (id: number, formData: FormData) =>
+    api.put(`/gifts/${id}`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }),
+
   deleteGift: (id: number) => api.delete(`/gifts/${id}`),
 };
 
