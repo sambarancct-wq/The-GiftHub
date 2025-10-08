@@ -3,13 +3,17 @@
 // 🧑‍💻 Basic User-related types
 export interface User {
   id: number;
+  username: string; // ADDED: Required field
   email: string;
   password: string;
+  isOrganizer: boolean;
   createdAt: string;
   updatedAt: string;
 }
 
 export interface Event {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  gifts: any;
   id: number;
   name: string;
   date: string;
@@ -20,7 +24,6 @@ export interface Event {
   createdAt: string;
   updatedAt: string;
 }
-
 
 export interface Gift {
   id: number;
@@ -41,16 +44,18 @@ export interface LoginCredentials {
 }
 
 export interface RegisterData {
+  username: string; // ADDED: Required field
   email: string;
   password: string;
 }
 
 // 🪪 Auth responses and error handling
 export interface AuthResponse {
+  username: string;
   message: string;
   userId?: number;
-  username?: string;
   email?: string;
+  isOrganizer?: boolean;
 }
 
 export interface ApiError {
@@ -58,22 +63,14 @@ export interface ApiError {
 }
 
 // 🧩 Props interfaces for pages & components
-
-// ✅ Registration Page
-// No need for navigation props anymore (React Router handles it)
-//export interface RegistrationPageProps {}
-
-// ✅ Login Page
 export interface LoginPageProps {
   onLoginSuccess: (userData: AuthResponse) => void;
 }
 
-// ✅ Landing Page
 export interface LandingPageProps {
   user: AuthResponse | null;
 }
 
-// ✅ Navbar Component
 export interface NavbarProps {
   user: AuthResponse | null;
   onLogout: () => void;

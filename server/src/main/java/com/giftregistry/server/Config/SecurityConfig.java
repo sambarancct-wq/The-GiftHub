@@ -28,10 +28,12 @@ public class SecurityConfig {
                 .requestMatchers(
                     new AntPathRequestMatcher("/api/login"),
                     new AntPathRequestMatcher("/api/register"),
+                    new AntPathRequestMatcher("/api/register-organizer"),
                     new AntPathRequestMatcher("/api/gifts"),
                     new AntPathRequestMatcher("/api/gifts/**"),
                     new AntPathRequestMatcher("/api/events"),
                     new AntPathRequestMatcher("/api/events/**"),
+                    new AntPathRequestMatcher("/api/events/public"),
                     new AntPathRequestMatcher("/api/users"),
                     new AntPathRequestMatcher("/api/users/**")
                 ).permitAll() // Allow all API endpoints without authentication

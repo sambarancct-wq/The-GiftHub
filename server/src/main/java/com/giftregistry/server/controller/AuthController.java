@@ -21,37 +21,35 @@ public class AuthController {
     private UserRepository userRepository;
 
     @PostMapping("/login")
-    public ResponseEntity<?> validateUser(@RequestBody Map<String, String> loginRequest) {
+    public ResponseEntity<?> login(@RequestBody Map<String, String> loginRequest) {
         try {
             String email = loginRequest.get("email");
             String password = loginRequest.get("password");
 
-            if (email == null || password == null || email.trim().isEmpty() || password.trim().isEmpty()) {
-                Map<String, String> response = new HashMap<>();
-                response.put("message", "Please provide both email and password.");
-                return ResponseEntity.badRequest().body(response);
+            Optional<User> userOptional = userRepository.findByEmailAndPassword(email, password);
+            
+            if (userOptional.isPresent()) {
+                User user = userOptional.get();
+                Map<String, Object> response = new HashMap<>();
+                response.put("message", "Login successful");
+                response.put("userId", user.getId());
+                response.put("email", user.getEmail());
+                response.put("isOrganizer", user.getIsOrganizer());
+                response.put("username", user.getUsername());
+                return ResponseEntity.ok(response);
             }
 
-            Optional<User> user = userRepository.findByEmailAndPassword(email, password);
-            if (!user.isPresent()) {
-                Map<String, String> response = new HashMap<>();
-                response.put("message", "Invalid credentials.");
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
-            }
-
-            Map<String, Object> response = new HashMap<>();
-            response.put("message", "Login successful");
-            response.put("userId", user.get().getId());
-            response.put("email", user.get().getEmail());
-            return ResponseEntity.ok(response);
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Invalid email or password");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
 
         } catch (Exception e) {
             Map<String, String> response = new HashMap<>();
-            response.put("message", "An error occurred during the login process.");
-            response.put("error", e.getMessage());
+            response.put("message", "Login failed: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
+
 
     // Registration endpoint
     @PostMapping("/register")
@@ -80,6 +78,64 @@ public class AuthController {
             Map<String, String> response = new HashMap<>();
             response.put("message", "Error during registration.");
             response.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @PostMapping("/register-organizer")
+    public ResponseEntity<?> registerOrganizer(@RequestBody User user) {
+        try {
+            if (userRepository.existsByEmail(user.getEmail())) {
+                Map<String, String> response = new HashMap<>();
+                response.put("message", "Email already exists");
+                return ResponseEntity.badRequest().body(response);
+            }
+
+            // Set user as organizer
+            user.setIsOrganizer(true);
+            User savedUser = userRepository.save(user);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Organizer registered successfully");
+            response.put("userId", savedUser.getId());
+            response.put("email", savedUser.getEmail());
+            response.put("isOrganizer", savedUser.getIsOrganizer());
+            
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Organizer registration failed: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    // Optional: Endpoint to upgrade regular user to organizer
+    @PutMapping("/users/{userId}/upgrade-to-organizer")
+    public ResponseEntity<?> upgradeToOrganizer(@PathVariable Long userId) {
+        try {
+            Optional<User> userOptional = userRepository.findById(userId);
+            if (userOptional.isEmpty()) {
+                Map<String, String> response = new HashMap<>();
+                response.put("message", "User not found.");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+
+            User user = userOptional.get();
+            user.setIsOrganizer(true);
+            User updatedUser = userRepository.save(user);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Account upgraded to organizer successfully");
+            response.put("userId", updatedUser.getId());
+            response.put("email", updatedUser.getEmail());
+            response.put("isOrganizer", updatedUser.getIsOrganizer());
+            
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Upgrade failed: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }

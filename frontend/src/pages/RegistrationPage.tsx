@@ -6,43 +6,75 @@ import type { RegisterData } from "../types";
 import "../styles/AuthPage.css";
 
 const RegistrationPage: React.FC = () => {
-  const [formData, setFormData] = useState<RegisterData & { confirmPassword: string }>({
+  const [formData, setFormData] = useState<RegisterData & { 
+    confirmPassword: string; 
+    isOrganizer: boolean;
+  }>({
+    username: "", // ADDED: Username field
     email: "",
     password: "",
     confirmPassword: "",
+    isOrganizer: false,
   });
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value, type, checked } = e.target;
+    setFormData({ 
+      ...formData, 
+      [name]: type === 'checkbox' ? checked : value 
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
+
+    // Validation
+    if (!formData.username.trim()) {
+      setError("Username is required");
+      return;
+    }
+
+    if (formData.username.length < 3) {
+      setError("Username must be at least 3 characters long");
+      return;
+    }
 
     if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match");
+      setError("Passwords do not match");
       return;
     }
 
     if (formData.password.length < 6) {
-      alert("Password must be at least 6 characters long");
+      setError("Password must be at least 6 characters long");
       return;
     }
 
     setIsLoading(true);
     try {
-      await authAPI.register({
+      const userData = {
+        username: formData.username,
         email: formData.email,
         password: formData.password,
-      });
+      };
 
-      alert("Registration successful! Please login.");
+      if (formData.isOrganizer) {
+        // Register as organizer
+        await authAPI.registerOrganizer(userData);
+        alert("🎉 Organizer account created successfully! You can now create events and manage gift registries.");
+      } else {
+        // Register as regular user
+        await authAPI.register(userData);
+        alert("✅ Account created successfully! You can now browse events and reserve gifts.");
+      }
+
       setTimeout(() => navigate("/login"), 1000);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      alert(error.response?.data?.message || "Registration failed");
+      setError(error.response?.data?.message || "Registration failed");
     } finally {
       setIsLoading(false);
     }
@@ -63,6 +95,17 @@ const RegistrationPage: React.FC = () => {
         </div>
 
         <form onSubmit={handleSubmit} className="auth-form">
+          {/* ADDED: Username field */}
+          <input
+            type="text"
+            name="username"
+            placeholder="Enter your username"
+            value={formData.username}
+            onChange={handleChange}
+            required
+            minLength={3}
+          />
+
           <input
             type="email"
             name="email"
@@ -97,6 +140,40 @@ const RegistrationPage: React.FC = () => {
             <span className="eye-icon">👁</span>
           </div>
 
+          {/* Organizer Selection */}
+          <div className="organizer-selection">
+            <label className="organizer-toggle">
+              <input
+                type="checkbox"
+                name="isOrganizer"
+                checked={formData.isOrganizer}
+                onChange={handleChange}
+              />
+              <span className="toggle-slider"></span>
+              <span className="toggle-label">
+                Register as Event Organizer
+              </span>
+            </label>
+            
+            {formData.isOrganizer && (
+              <div className="organizer-info">
+                <p>🎉 As an organizer, you can:</p>
+                <ul>
+                  <li>Create and manage events</li>
+                  <li>Build gift registries</li>
+                  <li>Track gift reservations</li>
+                  <li>Manage multiple events</li>
+                </ul>
+              </div>
+            )}
+          </div>
+
+          {error && (
+            <div className="error-message">
+              {error}
+            </div>
+          )}
+
           <button type="submit" disabled={isLoading}>
             {isLoading ? "Registering..." : "Sign Up"}
           </button>
@@ -110,7 +187,7 @@ const RegistrationPage: React.FC = () => {
             alt="Google"
           />
           <img
-            src="https://cdn-icons-png.flaticon.com/512/5968/5968764.png"
+            src="https://cdn-icons-png/flaticon.com/512/5968/5968764.png"
             alt="Facebook"
           />
         </div>

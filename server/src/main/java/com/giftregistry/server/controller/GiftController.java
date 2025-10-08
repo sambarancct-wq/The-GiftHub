@@ -42,7 +42,7 @@ public class GiftController {
             @RequestParam(value = "notes", required = false) String notes,
             @RequestParam("price") BigDecimal price,
             @RequestParam(value = "image", required = false) MultipartFile image,
-            @RequestParam(value = "eventId", required = false) Long eventId
+            @RequestParam("eventId") Long eventId
     ) {
         try {
             // Validation
@@ -51,6 +51,12 @@ public class GiftController {
             }
             if (price == null || price.compareTo(BigDecimal.ZERO) < 0) {
                 return ResponseEntity.badRequest().body(Map.of("message", "Price must be positive"));
+            }
+
+            // Validate event exists
+            Optional<Event> event = eventRepository.findById(eventId);
+            if (!event.isPresent()) {
+                return ResponseEntity.badRequest().body(Map.of("message", "Event not found"));
             }
 
             // Upload image to Cloudinary
@@ -66,16 +72,6 @@ public class GiftController {
                 }
             }
 
-            // Link event if provided
-            Event event = null;
-            if (eventId != null) {
-                Optional<Event> eventOpt = eventRepository.findById(eventId);
-                if (eventOpt.isEmpty()) {
-                    return ResponseEntity.badRequest().body(Map.of("message", "Invalid Event ID"));
-                }
-                event = eventOpt.get();
-            }
-
             // Create and save gift
             Gift gift = new Gift();
             gift.setName(name.trim());
@@ -83,7 +79,7 @@ public class GiftController {
             gift.setNotes(notes != null ? notes.trim() : null);
             gift.setPrice(price);
             gift.setImage(imageUrl); // Store Cloudinary URL
-            gift.setEvent(event);
+            gift.setEvent(event.get());
             gift.setCreatedAt(LocalDateTime.now());
             gift.setUpdatedAt(LocalDateTime.now());
 
@@ -103,6 +99,18 @@ public class GiftController {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("message", "Error adding gift: " + e.getMessage()));
+        }
+    }
+
+    // Get gifts by event (for event pages)
+    @GetMapping("/event/{eventId}")
+    public ResponseEntity<?> getGiftsByEvent(@PathVariable Long eventId) {
+        try {
+            java.util.List<Gift> gifts = giftRepository.findByEventId(eventId);
+            return ResponseEntity.ok(gifts);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "Error fetching gifts"));
         }
     }
 

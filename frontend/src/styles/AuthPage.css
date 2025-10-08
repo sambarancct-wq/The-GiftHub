@@ -1,3 +1,4 @@
+/* AuthPage.css */
 .auth-wrapper {
   display: flex;
   height: 100vh;
@@ -50,6 +51,17 @@
   padding-bottom: 5px;
 }
 
+.inactive-tab {
+  margin-right: 20px;
+  font-size: 16px;
+  color: #888;
+  text-decoration: none;
+}
+
+.inactive-tab:hover {
+  color: #3a5a73;
+}
+
 .auth-form {
   display: flex;
   flex-direction: column;
@@ -57,15 +69,15 @@
 
 .auth-form input {
   display: block;
-  width: 100%;              /* Make all inputs equal width */
-  box-sizing: border-box;   /* Ensure padding doesn't reduce width */
+  width: 100%;
+  box-sizing: border-box;
   margin-bottom: 20px;
   padding: 12px;
   border: none;
   border-bottom: 1px solid #ccc;
   font-size: 15px;
   outline: none;
-  background: transparent;  /* Keep consistent with minimal design */
+  background: transparent;
 }
 
 .auth-form input:focus {
@@ -85,6 +97,109 @@
   color: #777;
 }
 
+/* Organizer Selection Styles */
+.organizer-selection {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.organizer-toggle {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 0.5rem 0;
+}
+
+.organizer-toggle input[type="checkbox"] {
+  display: none;
+}
+
+.toggle-slider {
+  width: 50px;
+  height: 25px;
+  background: #ccc;
+  border-radius: 25px;
+  position: relative;
+  margin-right: 1rem;
+  transition: all 0.3s ease;
+}
+
+.toggle-slider:before {
+  content: "";
+  position: absolute;
+  width: 21px;
+  height: 21px;
+  border-radius: 50%;
+  background: white;
+  top: 2px;
+  left: 2px;
+  transition: all 0.3s ease;
+}
+
+.organizer-toggle input[type="checkbox"]:checked + .toggle-slider {
+  background: #3a5a73;
+}
+
+.organizer-toggle input[type="checkbox"]:checked + .toggle-slider:before {
+  transform: translateX(25px);
+}
+
+.toggle-label {
+  font-weight: 600;
+  color: #495057;
+  font-size: 0.95rem;
+}
+
+.organizer-info {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: white;
+  border-radius: 6px;
+  border-left: 4px solid #3a5a73;
+}
+
+.organizer-info p {
+  font-weight: 600;
+  color: #3a5a73;
+  margin-bottom: 0.5rem;
+}
+
+.organizer-info ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.organizer-info li {
+  padding: 0.25rem 0;
+  color: #6c757d;
+  position: relative;
+  padding-left: 1.2rem;
+  font-size: 0.9rem;
+}
+
+.organizer-info li:before {
+  content: "✓";
+  color: #28a745;
+  font-weight: bold;
+  position: absolute;
+  left: 0;
+}
+
+.error-message {
+  background: #f8d7da;
+  color: #721c24;
+  padding: 0.75rem;
+  border-radius: 6px;
+  border: 1px solid #f5c6cb;
+  margin: 1rem 0;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
 .auth-form button {
   background: #3a5a73;
   color: #fff;
@@ -93,10 +208,19 @@
   border-radius: 5px;
   font-size: 16px;
   cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
 }
 
-.auth-form button:hover {
+.auth-form button:hover:not(:disabled) {
   background: #2c3e50;
+  transform: translateY(-2px);
+}
+
+.auth-form button:disabled {
+  background: #6c757d;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .or-text {
@@ -115,4 +239,58 @@
   width: 32px;
   height: 32px;
   cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.social-login img:hover {
+  transform: scale(1.1);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .auth-wrapper {
+    flex-direction: column;
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .auth-left {
+    flex: none;
+    height: 200px;
+    border-radius: 0 0 20px 20px;
+  }
+
+  .auth-right {
+    flex: none;
+    padding: 40px 30px;
+  }
+
+  .organizer-selection {
+    margin: 1rem 0;
+    padding: 0.75rem;
+  }
+
+  .organizer-info {
+    padding: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-right {
+    padding: 30px 20px;
+  }
+
+  .auth-right h2 {
+    font-size: 24px;
+  }
+
+  .organizer-toggle {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .toggle-label {
+    font-size: 0.9rem;
+  }
 }
