@@ -4,6 +4,7 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+.env
 ### STS ###
 .apt_generated
 .classpath
@@ -31,3 +32,25 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# API Secrets and sensitive data
+application-dev.properties
+application-prod.properties
+.env
+.env.local
+.env.*.local
+
+# Cloudinary
+cloudinary-config.json
+
+# Database
+*.db
+*.sqlite
+
+# Logs
+*.log
+logs/
+
+# Build
+target/
+build/

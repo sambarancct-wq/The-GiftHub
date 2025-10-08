@@ -4,14 +4,14 @@ import com.giftregistry.server.model.Event;
 import com.giftregistry.server.model.Gift;
 import com.giftregistry.server.repository.EventRepository;
 import com.giftregistry.server.repository.GiftRepository;
+import com.giftregistry.server.service.ImageService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -29,10 +29,11 @@ public class GiftController {
     @Autowired
     private EventRepository eventRepository;
 
-    private static final String UPLOAD_DIR = "uploads/";
+    @Autowired
+    private ImageService imageService;
 
     /**
-     * Add Gift (Multipart Upload)
+     * Add Gift with Cloudinary Image Upload
      */
     @PostMapping(consumes = {"multipart/form-data"})
     public ResponseEntity<?> addGift(
@@ -44,83 +45,69 @@ public class GiftController {
             @RequestParam(value = "eventId", required = false) Long eventId
     ) {
         try {
-            //Validation
-            if (name.trim().isEmpty() || recipient.trim().isEmpty()) {
+            // Validation
+            if (name == null || name.trim().isEmpty() || recipient == null || recipient.trim().isEmpty()) {
                 return ResponseEntity.badRequest().body(Map.of("message", "Name and recipient are required"));
             }
-            if (price.compareTo(BigDecimal.ZERO) < 0) {
+            if (price == null || price.compareTo(BigDecimal.ZERO) < 0) {
                 return ResponseEntity.badRequest().body(Map.of("message", "Price must be positive"));
             }
 
-            // Save image file if provided
+            // Upload image to Cloudinary
             String imageUrl = null;
             if (image != null && !image.isEmpty()) {
-                File uploadDir = new File(UPLOAD_DIR);
-                if (!uploadDir.exists()) uploadDir.mkdirs();
-
-                String fileName = System.currentTimeMillis() + "_" + image.getOriginalFilename();
-                File dest = new File(uploadDir, fileName);
-                image.transferTo(dest);
-                imageUrl = "/uploads/" + fileName; // stored path (can serve statically)
+                try {
+                    imageUrl = imageService.uploadImage(image);
+                    System.out.println("✅ Image uploaded to Cloudinary: " + imageUrl);
+                } catch (Exception e) {
+                    System.err.println("❌ Image upload failed: " + e.getMessage());
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                            .body(Map.of("message", "Image upload failed: " + e.getMessage()));
+                }
             }
 
             // Link event if provided
             Event event = null;
             if (eventId != null) {
-                event = eventRepository.findById(eventId).orElse(null);
-                if (event == null)
+                Optional<Event> eventOpt = eventRepository.findById(eventId);
+                if (eventOpt.isEmpty()) {
                     return ResponseEntity.badRequest().body(Map.of("message", "Invalid Event ID"));
+                }
+                event = eventOpt.get();
             }
 
-            //Create and save gift
+            // Create and save gift
             Gift gift = new Gift();
-            gift.setName(name);
-            gift.setRecipient(recipient);
-            gift.setNotes(notes);
+            gift.setName(name.trim());
+            gift.setRecipient(recipient.trim());
+            gift.setNotes(notes != null ? notes.trim() : null);
             gift.setPrice(price);
-            gift.setImage(imageUrl);
+            gift.setImage(imageUrl); // Store Cloudinary URL
             gift.setEvent(event);
             gift.setCreatedAt(LocalDateTime.now());
             gift.setUpdatedAt(LocalDateTime.now());
 
             Gift savedGift = giftRepository.save(gift);
 
-            return ResponseEntity.status(HttpStatus.CREATED).body(Map.of(
-                    "message", "🎁 Gift added successfully!",
-                    "gift", savedGift
-            ));
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", "File upload error"));
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "🎁 Gift added successfully!");
+            response.put("gift", savedGift);
+            if (imageUrl != null) {
+                response.put("imageUrl", imageUrl);
+            }
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
+            System.err.println("❌ Error adding gift: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "Error adding gift: " + e.getMessage()));
         }
     }
 
     /**
-     * Get All Gifts
-     */
-    @GetMapping
-    public ResponseEntity<?> getAllGifts() {
-        try {
-            return ResponseEntity.ok(giftRepository.findAll());
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(Map.of("message", "Error fetching gifts"));
-        }
-    }
-
-    /**
-     * Get Gift by ID
-     */
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getGiftById(@PathVariable Long id) {
-        Optional<Gift> gift = giftRepository.findById(id);
-        return gift.<ResponseEntity<?>>map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(Map.of("message", "Gift not found")));
-    }
-
-    /**
-     * Update Gift (Multipart Support)
+     * Update Gift with Cloudinary
      */
     @PutMapping(value = "/{id}", consumes = {"multipart/form-data"})
     public ResponseEntity<?> updateGift(
@@ -140,46 +127,82 @@ public class GiftController {
 
             Gift gift = existingGift.get();
 
-            if (name != null) gift.setName(name);
-            if (recipient != null) gift.setRecipient(recipient);
-            if (notes != null) gift.setNotes(notes);
+            // Update fields if provided
+            if (name != null) gift.setName(name.trim());
+            if (recipient != null) gift.setRecipient(recipient.trim());
+            if (notes != null) gift.setNotes(notes.trim());
             if (price != null) gift.setPrice(price);
             if (status != null) gift.setStatus(status);
 
+            // Handle image update
             if (image != null && !image.isEmpty()) {
-                File uploadDir = new File(UPLOAD_DIR);
-                if (!uploadDir.exists()) uploadDir.mkdirs();
-
-                String fileName = System.currentTimeMillis() + "_" + image.getOriginalFilename();
-                File dest = new File(uploadDir, fileName);
-                image.transferTo(dest);
-                gift.setImage("/uploads/" + fileName);
+                // Delete old image from Cloudinary if exists
+                if (gift.getImage() != null) {
+                    imageService.deleteImage(gift.getImage());
+                }
+                
+                // Upload new image
+                String newImageUrl = imageService.uploadImage(image);
+                gift.setImage(newImageUrl);
             }
 
             gift.setUpdatedAt(LocalDateTime.now());
             Gift updatedGift = giftRepository.save(gift);
 
-            return ResponseEntity.ok(Map.of(
-                    "message", "Gift updated successfully!",
-                    "gift", updatedGift
-            ));
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Gift updated successfully!");
+            response.put("gift", updatedGift);
 
-        } catch (IOException e) {
-            return ResponseEntity.internalServerError().body(Map.of("message", "Error uploading image"));
+            return ResponseEntity.ok(response);
+
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(Map.of("message", "Error updating gift"));
+            System.err.println("❌ Error updating gift: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "Error updating gift: " + e.getMessage()));
         }
     }
 
     /**
-     * Delete Gift
+     * Delete Gift (also deletes image from Cloudinary)
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteGift(@PathVariable Long id) {
-        if (!giftRepository.existsById(id)) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "Gift not found"));
+        try {
+            Optional<Gift> gift = giftRepository.findById(id);
+            if (gift.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "Gift not found"));
+            }
+
+            // Delete image from Cloudinary if exists
+            if (gift.get().getImage() != null) {
+                imageService.deleteImage(gift.get().getImage());
+            }
+
+            giftRepository.deleteById(id);
+            return ResponseEntity.ok(Map.of("message", "Gift deleted successfully"));
+
+        } catch (Exception e) {
+            System.err.println("❌ Error deleting gift: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "Error deleting gift"));
         }
-        giftRepository.deleteById(id);
-        return ResponseEntity.ok(Map.of("message", "Gift deleted successfully"));
+    }
+
+    // Keep your existing GET methods (they don't need changes)
+    @GetMapping
+    public ResponseEntity<?> getAllGifts() {
+        try {
+            return ResponseEntity.ok(giftRepository.findAll());
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(Map.of("message", "Error fetching gifts"));
+        }
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getGiftById(@PathVariable Long id) {
+        Optional<Gift> gift = giftRepository.findById(id);
+        return gift.<ResponseEntity<?>>map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("message", "Gift not found")));
     }
 }
