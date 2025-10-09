@@ -36,10 +36,7 @@ export const authAPI = {
   login: (credentials: { email: string; password: string }) => 
     api.post('/login', credentials),
   register: (userData: { username: string; email: string; password: string }) => // UPDATED
-    api.post('/register', userData),
-  
-  registerOrganizer: (userData: { username: string; email: string; password: string }) => // UPDATED
-    api.post('/register-organizer', userData),  
+    api.post('/register', userData), 
   upgradeToOrganizer: (userId: number) => 
     api.put(`/users/${userId}/upgrade-to-organizer`),
 };

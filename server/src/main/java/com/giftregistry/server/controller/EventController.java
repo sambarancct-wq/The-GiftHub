@@ -31,28 +31,25 @@ public class EventController {
      * Create a new event
      */
     @PostMapping
-    public ResponseEntity<?> createEvent(@RequestBody Event event, @RequestParam Long organizerId) {
+    public ResponseEntity<?> createEvent(@RequestBody Event event, @RequestParam Long creatorId) {
         try {
-            System.out.println("🎉 Creating event: " + event.getName() + " for organizer: " + organizerId);
+            System.out.println("🎉 Creating event: " + event.getName() + " for creator: " + creatorId);
 
-            // Validate that organizer exists and is actually an organizer
-            Optional<User> organizer = userRepository.findById(organizerId);
-            if (!organizer.isPresent()) {
-                return ResponseEntity.badRequest().body(Map.of("message", "Organizer not found"));
-            }
-            
-            User organizerUser = organizer.get();
-            if (!organizerUser.getIsOrganizer()) {
-                return ResponseEntity.badRequest().body(Map.of("message", "User is not an organizer"));
+            // Validate that creator exists
+            Optional<User> creator = userRepository.findById(creatorId);
+            if (!creator.isPresent()) {
+                return ResponseEntity.badRequest().body(Map.of("message", "User not found"));
             }
 
-            // Check if event name already exists for this organizer
-            if (eventRepository.existsByNameAndOrganizer(event.getName(), organizerUser)) {
-                return ResponseEntity.badRequest().body(Map.of("message", "Event name already exists for this organizer"));
+            User creatorUser = creator.get();
+
+            // Check if event name already exists for this creator
+            if (eventRepository.existsByNameAndCreator(event.getName(), creatorUser)) {
+                return ResponseEntity.badRequest().body(Map.of("message", "Event name already exists for this user"));
             }
 
-            // Set organizer and timestamps
-            event.setOrganizer(organizerUser);
+            // Set creator and timestamps
+            event.setCreator(creatorUser);
             event.setCreatedAt(LocalDateTime.now());
             event.setUpdatedAt(LocalDateTime.now());
 
@@ -75,7 +72,7 @@ public class EventController {
     }
 
     /**
-     * Get all events (public - for buyers to browse)
+     * Get all events (public - for all users to browse)
      */
     @GetMapping("/public")
     public ResponseEntity<?> getAllPublicEvents() {
@@ -91,16 +88,16 @@ public class EventController {
     }
 
     /**
-     * Get events by organizer
+     * Get events by creator (user)
      */
-    @GetMapping("/organizer/{organizerId}")
-    public ResponseEntity<?> getEventsByOrganizer(@PathVariable Long organizerId) {
+    @GetMapping("/creator/{creatorId}")
+    public ResponseEntity<?> getEventsByCreator(@PathVariable Long creatorId) {
         try {
-            List<Event> events = eventRepository.findByOrganizerId(organizerId);
-            System.out.println("📋 Found " + events.size() + " events for organizer: " + organizerId);
+            List<Event> events = eventRepository.findByCreatorId(creatorId);
+            System.out.println("📋 Found " + events.size() + " events for creator: " + creatorId);
             return ResponseEntity.ok(events);
         } catch (Exception e) {
-            System.err.println("❌ Error fetching organizer events: " + e.getMessage());
+            System.err.println("❌ Error fetching creator events: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("message", "Error fetching events"));
         }
@@ -128,10 +125,10 @@ public class EventController {
     }
 
     /**
-     * Update event
+     * Update event - only allowed for event creator
      */
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateEvent(@PathVariable Long id, @RequestBody Event eventDetails) {
+    public ResponseEntity<?> updateEvent(@PathVariable Long id, @RequestBody Event eventDetails, @RequestParam Long creatorId) {
         try {
             Optional<Event> eventOptional = eventRepository.findById(id);
             if (eventOptional.isEmpty()) {
@@ -141,10 +138,16 @@ public class EventController {
 
             Event event = eventOptional.get();
             
+            // Check if the user is the creator of this event
+            if (!event.getCreator().getId().equals(creatorId)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(Map.of("message", "Only the event creator can update this event"));
+            }
+            
             // Update fields if provided
             if (eventDetails.getName() != null) event.setName(eventDetails.getName());
             if (eventDetails.getDescription() != null) event.setDescription(eventDetails.getDescription());
-            if (eventDetails.getDate() != null) event.setDate(eventDetails.getDate());
+            if (eventDetails.getEventDate() != null) event.setEventDate(eventDetails.getEventDate());
             if (eventDetails.getLocation() != null) event.setLocation(eventDetails.getLocation());
             if (eventDetails.getType() != null) event.setType(eventDetails.getType());
             
@@ -167,14 +170,23 @@ public class EventController {
     }
 
     /**
-     * Delete event
+     * Delete event - only allowed for event creator
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteEvent(@PathVariable Long id) {
+    public ResponseEntity<?> deleteEvent(@PathVariable Long id, @RequestParam Long creatorId) {
         try {
-            if (!eventRepository.existsById(id)) {
+            Optional<Event> eventOptional = eventRepository.findById(id);
+            if (eventOptional.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(Map.of("message", "Event not found"));
+            }
+
+            Event event = eventOptional.get();
+            
+            // Check if the user is the creator of this event
+            if (!event.getCreator().getId().equals(creatorId)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(Map.of("message", "Only the event creator can delete this event"));
             }
             
             eventRepository.deleteById(id);
@@ -190,27 +202,32 @@ public class EventController {
     }
 
     /**
-     * Get events by type/category
-     */
-    @GetMapping("/category/{category}")
-    public ResponseEntity<?> getEventsByCategory(@PathVariable String category) {
+ * Get events by type/category
+ */
+@GetMapping("/category/{category}")
+public ResponseEntity<?> getEventsByCategory(@PathVariable String category) {
+    try {
+        // 1. Convert the incoming string (e.g., "birthday") to the corresponding enum
+        Event.EventType eventType;
         try {
-            Event.EventType type;
-            try {
-                type = Event.EventType.valueOf(category.toUpperCase());
-            } catch (IllegalArgumentException e) {
-                return ResponseEntity.badRequest().body(Map.of("message", "Invalid event category"));
-            }
-            
-            List<Event> events = eventRepository.findByType(type);
-            System.out.println("📋 Found " + events.size() + " events in category: " + category);
-            return ResponseEntity.ok(events);
-        } catch (Exception e) {
-            System.err.println("❌ Error fetching events by category: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("message", "Error fetching events"));
+            eventType = Event.EventType.valueOf(category.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            // Handle cases where the category is invalid (e.g., "party")
+            return ResponseEntity.badRequest().body(Map.of("message", "Invalid event category: " + category));
         }
+
+        // 2. Call the correct, type-safe repository method
+        List<Event> events = eventRepository.findByType(eventType);
+        
+        System.out.println("📋 Found " + events.size() + " events in category: " + category);
+        return ResponseEntity.ok(events);
+
+    } catch (Exception e) {
+        System.err.println("❌ Error fetching events by category: " + e.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("message", "Error fetching events"));
     }
+}
 
     /**
      * Get upcoming events
@@ -226,6 +243,22 @@ public class EventController {
             System.err.println("❌ Error fetching upcoming events: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("message", "Error fetching upcoming events"));
+        }
+    }
+
+    /**
+     * Search events by name or description
+     */
+    @GetMapping("/search")
+    public ResponseEntity<?> searchEvents(@RequestParam String query) {
+        try {
+            List<Event> events = eventRepository.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(query, query);
+            System.out.println("🔍 Found " + events.size() + " events matching: " + query);
+            return ResponseEntity.ok(events);
+        } catch (Exception e) {
+            System.err.println("❌ Error searching events: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "Error searching events"));
         }
     }
 }

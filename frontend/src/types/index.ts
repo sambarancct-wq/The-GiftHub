@@ -6,7 +6,6 @@ export interface User {
   username: string; // ADDED: Required field
   email: string;
   password: string;
-  isOrganizer: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -17,7 +16,7 @@ export interface Event {
   id: number;
   name: string;
   date: string;
-  organizer: User;
+  creator: User;
   description: string;
   location?: string;
   type: 'BIRTHDAY' | 'WEDDING' | 'HOLIDAY' | 'ANNIVERSARY' | 'OTHER';
@@ -55,7 +54,6 @@ export interface AuthResponse {
   message: string;
   userId?: number;
   email?: string;
-  isOrganizer?: boolean;
 }
 
 export interface ApiError {

@@ -22,8 +22,8 @@ public class Event {
     private LocalDate date;
     
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "organizer_id", nullable = false)
-    private User organizer;
+    @JoinColumn(name = "creator_id")
+    private User creator;
     
     @Column(nullable = false)
     private String description;
@@ -54,11 +54,11 @@ public class Event {
         this.updatedAt = LocalDateTime.now();
     }
     
-    public Event(String name, LocalDate date, User organizer, String description, EventType type) {
+    public Event(String name, LocalDate date, User creator, String description, EventType type) {
         this();
         this.name = name;
         this.date = date;
-        this.organizer = organizer;
+        this.creator = creator;
         this.description = description;
         this.type = type;
     }
@@ -78,8 +78,8 @@ public class Event {
     public LocalDate getDate() { return date; }
     public void setDate(LocalDate date) { this.date = date; }
     
-    public User getOrganizer() { return organizer; }
-    public void setOrganizer(User organizer) { this.organizer = organizer; }
+    public User getCreator() { return creator; }
+    public void setCreator(User creator) { this.creator = creator; }
     
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
@@ -98,4 +98,8 @@ public class Event {
     
     public LocalDateTime getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+
+    public LocalDate getEventDate() { return date; }
+    public void setEventDate(LocalDate date) { this.date = date; }
+
 }

@@ -1,6 +1,6 @@
 /* CreateEventPage.css */
 .create-event-container {
-  max-width: 800px;
+  width: 100vh;
   margin: 0 auto;
   padding: 2rem;
   background: #f8f9fa;

@@ -26,7 +26,6 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogout }) => {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      // Navigate to events list with search query
       navigate(`/events?search=${encodeURIComponent(searchQuery)}`);
       setSearchQuery('');
     }
@@ -54,9 +53,7 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogout }) => {
             <div className="page-links">
               <Link to="/create-event">Create Event</Link>
               <Link to="/events">Browse Events</Link>
-              {user.isOrganizer && (
-                <Link to="/my-events">My Events</Link>
-              )}
+              <Link to="/my-events">My Events</Link> {/* All users can see their events */}
               <Link to="/gifts">All Gifts</Link>
             </div>
           </div>
@@ -88,24 +85,20 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogout }) => {
         <div className="navbar-user-menu" ref={dropdownRef}>
           <button className="navbar-user-button" onClick={toggleDropdown}>
             {user.username || user.email}
-            {user.isOrganizer && <span className="organizer-badge">(Organizer)</span>}
             <span className={`dropdown-arrow ${isDropdownOpen ? 'open' : ''}`}></span>
           </button>
           {isDropdownOpen && (
             <div className="navbar-dropdown">
               <div className="user-info">
                 <strong>{user.username}</strong>
-                {user.isOrganizer && <span className="organizer-tag">(Organizer)</span>}
               </div>
               <div className="dropdown-divider"></div>
               <Link to="/profile" onClick={() => setIsDropdownOpen(false)}>
                 Profile
               </Link>
-              {user.isOrganizer && (
-                <Link to="/my-events" onClick={() => setIsDropdownOpen(false)}>
-                  My Events
-                </Link>
-              )}
+              <Link to="/my-events" onClick={() => setIsDropdownOpen(false)}>
+                My Events
+              </Link>
               <div className="dropdown-divider"></div>
               <button className="logout-btn" onClick={handleLogoutClick}>
                 Logout

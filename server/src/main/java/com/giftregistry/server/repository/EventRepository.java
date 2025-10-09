@@ -12,9 +12,9 @@ import java.util.List;
 
 @Repository
 public interface EventRepository extends JpaRepository<Event, Long> {
-    List<Event> findByOrganizer(User organizer);
-    List<Event> findByOrganizerId(Long organizerId);
-    boolean existsByNameAndOrganizer(String name, User organizer);
     List<Event> findByType(EventType type);
     List<Event> findByDateAfter(LocalDate today);
+    boolean existsByNameAndCreator(String name, User creatorUser);
+    List<Event> findByCreatorId(Long creatorId);
+    List<Event> findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(String query, String query2);
 }
