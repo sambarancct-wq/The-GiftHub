@@ -80,13 +80,13 @@ function AppContent({
         
         {/* Organizer Only Routes */}
         <Route path="/create-event" element={
-          currentUser?.isOrganizer ? <CreateEventPage /> : <Navigate to="/login" />
+          <CreateEventPage />
         } />
         <Route path="/my-events" element={
-          currentUser?.isOrganizer ? <MyEventsPage /> : <Navigate to="/login" />
+          <MyEventsPage />
         } />
         <Route path="/add-gift" element={
-          currentUser?.isOrganizer ? <GiftAddPage /> : <Navigate to="/login" />
+          <GiftAddPage />
         } />
         
         {/* Redirect unknown routes */}
