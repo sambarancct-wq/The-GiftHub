@@ -1,6 +1,6 @@
 package com.giftregistry.server.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -39,7 +39,7 @@ public class Gift {
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id")
-    @JsonIgnore
+    @JsonBackReference("event-gifts")
     private Event event;
     
     @Column(name = "created_at")

@@ -60,7 +60,7 @@ const CreateEventPage: React.FC = () => {
       }
 
       // Create event
-      const response = await eventAPI.createEvent(formData, user.id);
+      const response = await eventAPI.createEvent(formData, user.userId);
       
       alert("🎉 Event created successfully!");
       

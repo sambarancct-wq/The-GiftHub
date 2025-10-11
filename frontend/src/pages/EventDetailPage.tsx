@@ -122,7 +122,7 @@ const EventDetailPage: React.FC = () => {
     if (!userData) return false;
     
     const user = JSON.parse(userData);
-    return user.userId === event.creator.id;
+    return !!user && event?.creator?.id && user.userId === event.creator.id;
   };
 
   return (
@@ -135,7 +135,7 @@ const EventDetailPage: React.FC = () => {
         
         <div className="event-title-section">
           <div className="event-type-badge" style={{ backgroundColor: getEventTypeColor(event.type) }}>
-            {event.type.toLowerCase()}
+              {typeof event?.type === 'string' ? event.type.toLowerCase() : "unknown"}
           </div>
           <h1>{event.name}</h1>
           <p className="event-description">{event.description}</p>
@@ -172,7 +172,7 @@ const EventDetailPage: React.FC = () => {
           
           <div className="detail-item">
             <span className="detail-label">👤 Organizer:</span>
-            <span className="detail-value">{event.creator.email}</span>
+            <span className="detail-value">{event.creator?.email}</span>
           </div>
           
           <div className="detail-item">

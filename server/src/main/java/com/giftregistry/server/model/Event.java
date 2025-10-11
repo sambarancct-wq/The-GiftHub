@@ -1,6 +1,9 @@
 package com.giftregistry.server.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -26,6 +29,7 @@ public class Event {
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "creator_id")
+    @JsonBackReference("user-events")
     private User creator;
     
     @Column(nullable = false)
@@ -34,9 +38,11 @@ public class Event {
     private String location;
     
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference("event-gifts")
     private List<Gift> gifts = new ArrayList<>();
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference("event-rsvps")
     private List<RSVP> rsvps = new ArrayList<>();
     
     @Enumerated(EnumType.STRING)

@@ -3,6 +3,8 @@ package com.giftregistry.server.model;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 @Entity
 @Table(name = "rsvps")
 public class RSVP {
@@ -19,6 +21,7 @@ public class RSVP {
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id")
+    @JsonBackReference("event-rsvps")
     private Event event;
     
     @Column(name = "responded_at")
