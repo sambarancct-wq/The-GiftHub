@@ -12,7 +12,8 @@ export interface Event {
   id: number;
   name: string;
   date: string;
-  creator?: User;
+  creator?:User;
+  creator_id:number;
   description: string;
   location?: string;
   type: 'BIRTHDAY' | 'WEDDING' | 'HOLIDAY' | 'ANNIVERSARY' | 'OTHER';

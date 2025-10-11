@@ -5,7 +5,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+//import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name = "users")
@@ -31,7 +32,7 @@ public class User {
     private LocalDateTime updatedAt;
     
     @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonManagedReference("user-events")
+    @JsonIgnore
     private List<Event> createdEvents = new ArrayList<>();
     
     public User() {

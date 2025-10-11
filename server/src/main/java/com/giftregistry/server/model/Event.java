@@ -1,6 +1,6 @@
 package com.giftregistry.server.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+//import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
@@ -27,9 +27,9 @@ public class Event {
     @Column(name = "event_key", unique = true)
     private String eventKey;
     
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "creator_id")
-    @JsonBackReference("user-events")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "creator_id", referencedColumnName = "id")
+    //@JsonBackReference("user-events")
     private User creator;
     
     @Column(nullable = false)

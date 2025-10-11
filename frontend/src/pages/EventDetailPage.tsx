@@ -172,7 +172,7 @@ const EventDetailPage: React.FC = () => {
           
           <div className="detail-item">
             <span className="detail-label">👤 Organizer:</span>
-            <span className="detail-value">{event.creator?.email}</span>
+            <span className="detail-value">{event.creator?.username}</span>
           </div>
           
           <div className="detail-item">

@@ -58,7 +58,6 @@ public class EventController {
             event.setCreator(creatorUser);
             event.setCreatedAt(LocalDateTime.now());
             event.setUpdatedAt(LocalDateTime.now());
-            event.setCreator(creatorUser);
             Event savedEvent = eventRepository.save(event);
             
             System.out.println("✅ Event created successfully with ID: " + savedEvent.getId() + " and Key: " + 
@@ -152,8 +151,8 @@ public class EventController {
                 rsvp.setStatus(RSVP.RSVPStatus.PENDING);
                 rsvpRepository.save(rsvp);
 
-                // TODO: Send email invitation with RSVP links
-                // emailService.sendRSVPInvitation(email, event);
+        
+            emailService.sendRSVPInvitation(email, event, creatorId);;
             }
 
             return ResponseEntity.ok(Map.of("message", "Invitations sent successfully to " + guestEmails.size() + " guests"));
@@ -226,6 +225,11 @@ public class EventController {
     public ResponseEntity<?> getAllPublicEvents() {
         try {
             List<Event> events = eventRepository.findAll();
+            for (Event event : events) {
+                if (event.getCreator() != null) {
+                    event.getCreator().getUsername();
+                }
+            }
             System.out.println("📋 Found " + events.size() + " public events");
             return ResponseEntity.ok(events);
         } catch (Exception e) {
@@ -257,10 +261,12 @@ public class EventController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getEventById(@PathVariable Long id) {
         try {
-            Optional<Event> event = eventRepository.findById(id);
-            if (event.isPresent()) {
-                System.out.println("📖 Found event: " + event.get().getName());
-                return ResponseEntity.ok(event.get());
+            Optional<Event> eventOpt = eventRepository.findById(id);
+            if (eventOpt.isPresent()) {
+                Event event = eventOpt.get();
+                System.out.println("📖 Found event: " + event.getName());
+                event.getCreator().getUsername();
+                return ResponseEntity.ok(event);
             } else {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(Map.of("message", "Event not found"));
