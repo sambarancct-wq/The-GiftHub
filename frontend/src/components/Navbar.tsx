@@ -1,24 +1,32 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import type { AuthResponse } from '../types';
+//import { type User } from '../types';
 import '../styles/Navbar.css';
 import { FaSearch } from 'react-icons/fa';
+import { useAuth } from '../context/AuthContext';
 
-interface NavbarProps {
-  user: AuthResponse | null;
+/*interface NavbarProps {
+  user: User | null;
   onLogout: () => void;
+}*/
+
+function getStoredUser() {
+  const userJson = localStorage.getItem('user');
+  return userJson ? JSON.parse(userJson) : null;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ user, onLogout }) => {
+const Navbar: React.FC = () => {
+  const { user:contextUser, logout } = useAuth();
+  const user = contextUser || getStoredUser();
+  console.log("Navbar user:", user);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const dropdownRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-
   const toggleDropdown = () => setIsDropdownOpen((prev) => !prev);
 
   const handleLogoutClick = () => {
-    onLogout();
+    logout();
     setIsDropdownOpen(false);
     navigate('/');
   };

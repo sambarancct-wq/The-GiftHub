@@ -1,9 +1,12 @@
 package com.giftregistry.server.controller;
 
 import com.giftregistry.server.model.Event;
+import com.giftregistry.server.model.RSVP;
 import com.giftregistry.server.model.User;
 import com.giftregistry.server.repository.EventRepository;
 import com.giftregistry.server.repository.UserRepository;
+import com.giftregistry.server.service.EmailService;
+import com.giftregistry.server.repository.RSVPRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +30,11 @@ public class EventController {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private RSVPRepository rsvpRepository;
+
+    @Autowired
+    private EmailService emailService;
     /**
      * Create a new event
      */
@@ -40,26 +48,28 @@ public class EventController {
             if (!creator.isPresent()) {
                 return ResponseEntity.badRequest().body(Map.of("message", "User not found"));
             }
-
+            
             User creatorUser = creator.get();
-
             // Check if event name already exists for this creator
             if (eventRepository.existsByNameAndCreator(event.getName(), creatorUser)) {
                 return ResponseEntity.badRequest().body(Map.of("message", "Event name already exists for this user"));
             }
-
             // Set creator and timestamps
             event.setCreator(creatorUser);
             event.setCreatedAt(LocalDateTime.now());
             event.setUpdatedAt(LocalDateTime.now());
-
+            event.setCreator(creatorUser);
             Event savedEvent = eventRepository.save(event);
             
-            System.out.println("✅ Event created successfully with ID: " + savedEvent.getId());
+            System.out.println("✅ Event created successfully with ID: " + savedEvent.getId() + " and Key: " + 
+            savedEvent.getEventKey());
+        
+            emailService.sendEventCreationEmail(creatorUser.getEmail(), savedEvent);
 
             Map<String, Object> response = new HashMap<>();
-            response.put("message", "Event created successfully!");
+            response.put("message", "Event created successfully! Check your email for the event key.");
             response.put("event", savedEvent);
+            response.put("eventKey", savedEvent.getEventKey());
             
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
 
@@ -70,6 +80,144 @@ public class EventController {
                     .body(Map.of("message", "Error creating event: " + e.getMessage()));
         }
     }
+
+    /**
+     * Get event dashboard for creator
+     */
+    @GetMapping("/dashboard/{eventId}")
+    public ResponseEntity<?> getEventDashboard(@PathVariable Long eventId, @RequestParam Long creatorId) {
+        try {
+            Optional<Event> eventOptional = eventRepository.findById(eventId);
+            if (eventOptional.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("message", "Event not found"));
+            }
+
+            Event event = eventOptional.get();
+            
+            // Verify the user is the creator
+            if (!event.getCreator().getId().equals(creatorId)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(Map.of("message", "Access denied"));
+            }
+
+            // Get RSVP counts
+            long attendingCount = rsvpRepository.countByEventAndStatus(event, RSVP.RSVPStatus.ACCEPTED);
+            long declinedCount = rsvpRepository.countByEventAndStatus(event, RSVP.RSVPStatus.DECLINED);
+            long pendingCount = rsvpRepository.countByEventAndStatus(event, RSVP.RSVPStatus.PENDING);
+
+            Map<String, Object> dashboard = new HashMap<>();
+            dashboard.put("event", event);
+            dashboard.put("attendingCount", attendingCount);
+            dashboard.put("declinedCount", declinedCount);
+            dashboard.put("pendingCount", pendingCount);
+            dashboard.put("totalInvited", attendingCount + declinedCount + pendingCount);
+
+            return ResponseEntity.ok(dashboard);
+
+        } catch (Exception e) {
+            System.err.println("❌ Error fetching dashboard: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "Error fetching dashboard"));
+        }
+    }
+
+    /**
+     * Send RSVP invitations
+     */
+    @PostMapping("/{eventId}/invite")
+    public ResponseEntity<?> sendInvitations(@PathVariable Long eventId, 
+                                           @RequestParam Long creatorId,
+                                           @RequestBody List<String> guestEmails) {
+        try {
+            Optional<Event> eventOptional = eventRepository.findById(eventId);
+            if (eventOptional.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("message", "Event not found"));
+            }
+
+            Event event = eventOptional.get();
+            
+            // Verify the user is the creator
+            if (!event.getCreator().getId().equals(creatorId)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(Map.of("message", "Access denied"));
+            }
+
+            // Create RSVP records for each guest
+            for (String email : guestEmails) {
+                RSVP rsvp = new RSVP();
+                rsvp.setGuestEmail(email);
+                rsvp.setEvent(event);
+                rsvp.setStatus(RSVP.RSVPStatus.PENDING);
+                rsvpRepository.save(rsvp);
+
+                // TODO: Send email invitation with RSVP links
+                // emailService.sendRSVPInvitation(email, event);
+            }
+
+            return ResponseEntity.ok(Map.of("message", "Invitations sent successfully to " + guestEmails.size() + " guests"));
+
+        } catch (Exception e) {
+            System.err.println("❌ Error sending invitations: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "Error sending invitations"));
+        }
+    }
+
+    /**
+     * Find event by key (for guests)
+     */
+    @GetMapping("/key/{eventKey}")
+    public ResponseEntity<?> getEventByKey(@PathVariable String eventKey) {
+        try {
+            Optional<Event> event = eventRepository.findByEventKey(eventKey);
+            if (event.isPresent()) {
+                // Don't return creator information to guests
+                Event eventResponse = event.get();
+                eventResponse.setCreator(null); // Hide creator details
+                return ResponseEntity.ok(eventResponse);
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("message", "Event not found"));
+            }
+        } catch (Exception e) {
+            System.err.println("❌ Error fetching event: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "Error fetching event"));
+        }
+    }
+
+    /**
+     * Get RSVP details for an event
+     */
+    @GetMapping("/{eventId}/rsvps")
+    public ResponseEntity<?> getEventRSVPs(@PathVariable Long eventId, @RequestParam Long creatorId) {
+        try {
+            Optional<Event> eventOptional = eventRepository.findById(eventId);
+            if (eventOptional.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("message", "Event not found"));
+            }
+
+            Event event = eventOptional.get();
+            
+            // Verify the user is the creator
+            if (!event.getCreator().getId().equals(creatorId)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(Map.of("message", "Access denied"));
+            }
+
+            List<RSVP> rsvps = rsvpRepository.findByEvent(event);
+            return ResponseEntity.ok(rsvps);
+
+        } catch (Exception e) {
+            System.err.println("❌ Error fetching RSVPs: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "Error fetching RSVPs"));
+        }
+    }
+
 
     /**
      * Get all events (public - for all users to browse)

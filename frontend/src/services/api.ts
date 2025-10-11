@@ -43,11 +43,11 @@ export const authAPI = {
 
 export const eventAPI = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  createEvent: (eventData: any, organizerId: number) => 
-    api.post(`/events?organizerId=${organizerId}`, eventData),
+  createEvent: (eventData: any, creatorId: number) => 
+    api.post(`/events?creatorId=${creatorId}`, eventData),
   
-  getEventsByOrganizer: (organizerId: number) => 
-    api.get(`/events/organizer/${organizerId}`),
+  getEventsByOrganizer: (creatorId: number) => 
+    api.get(`/events/organizer/${creatorId}`),
   
   getAllPublicEvents: () => api.get('/events/public'),
   

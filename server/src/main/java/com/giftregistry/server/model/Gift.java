@@ -26,6 +26,12 @@ public class Gift {
     
     @Column(columnDefinition = "TEXT")
     private String image;
+
+    @Column(columnDefinition = "TEXT")
+    private String productUrl;
+
+    @Column(nullable = false)
+    private String store;
     
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -96,4 +102,10 @@ public class Gift {
     
     public LocalDateTime getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+
+    public String getProductUrl() { return productUrl; }
+    public void setProductUrl(String productUrl) { this.productUrl = productUrl; }
+    
+    public String getStore() { return store; }
+    public void setStore(String store) { this.store = store; }
 }

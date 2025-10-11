@@ -1,18 +1,14 @@
-// src/types/index.ts
-
-// 🧑‍💻 Basic User-related types
 export interface User {
   id: number;
-  username: string; // ADDED: Required field
+  username: string;
   email: string;
-  password: string;
-  createdAt: string;
-  updatedAt: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
+// Event type
 export interface Event {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  gifts: any;
+  gifts: Gift[];
   id: number;
   name: string;
   date: string;
@@ -24,6 +20,7 @@ export interface Event {
   updatedAt: string;
 }
 
+// Gift type
 export interface Gift {
   id: number;
   name: string;
@@ -37,39 +34,33 @@ export interface Gift {
   updatedAt: string;
 }
 
+// Login credentials (used for login form)
 export interface LoginCredentials {
   email: string;
   password: string;
 }
 
+// Registration data (used for register form)
 export interface RegisterData {
-  username: string; // ADDED: Required field
+  username: string;
   email: string;
   password: string;
 }
 
 // 🪪 Auth responses and error handling
 export interface AuthResponse {
-  username: string;
+  user: User;
   message: string;
-  userId?: number;
-  email?: string;
+  token?: string; // Optional: add if you use JWT or session token
 }
 
+// Generic API error type
 export interface ApiError {
   message: string;
 }
 
-// 🧩 Props interfaces for pages & components
+// 🧩 Props interfaces for legacy pages/components (usage discouraged in new code)
 export interface LoginPageProps {
-  onLoginSuccess: (userData: AuthResponse) => void;
-}
-
-export interface LandingPageProps {
-  user: AuthResponse | null;
-}
-
-export interface NavbarProps {
-  user: AuthResponse | null;
-  onLogout: () => void;
+  // Called on successful authentication, passes the whole AuthResponse
+  onLoginSuccess: (data: AuthResponse) => void;
 }

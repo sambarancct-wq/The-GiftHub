@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { authAPI } from "../services/api";
 import type { LoginPageProps, LoginCredentials } from "../types";
 import "../styles/AuthPage.css";
+//import { useAuth } from "../context/AuthContext";
 
 const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
   const [formData, setFormData] = useState<LoginCredentials>({ 
@@ -12,6 +13,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
   });
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const navigate = useNavigate();
+  //const { user } = useAuth();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -23,6 +25,9 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
     try {
       const response = await authAPI.login(formData);
       onLoginSuccess(response.data);
+      const userJson = JSON.stringify(response.data);
+      localStorage.setItem('user', userJson);
+      console.log(userJson);
       navigate("/"); // Redirect after login
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {

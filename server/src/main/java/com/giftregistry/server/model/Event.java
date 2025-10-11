@@ -20,6 +20,9 @@ public class Event {
     @Column(name = "event_date", nullable = false)
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate date;
+
+    @Column(name = "event_key", unique = true)
+    private String eventKey;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "creator_id")
@@ -32,6 +35,9 @@ public class Event {
     
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Gift> gifts = new ArrayList<>();
+
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<RSVP> rsvps = new ArrayList<>();
     
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -52,6 +58,11 @@ public class Event {
     public Event() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
+        this.eventKey = generateEventKey();
+    }
+
+    private String generateEventKey() {
+        return "EVT" + System.currentTimeMillis() + (int)(Math.random() * 1000);
     }
     
     public Event(String name, LocalDate date, User creator, String description, EventType type) {
@@ -102,4 +113,9 @@ public class Event {
     public LocalDate getEventDate() { return date; }
     public void setEventDate(LocalDate date) { this.date = date; }
 
+    public String getEventKey() { return eventKey; }
+    public void setEventKey(String eventKey) { this.eventKey = eventKey; }
+
+    public List<RSVP> getRsvps() { return rsvps; }
+    public void setRsvps(List<RSVP> rsvps) { this.rsvps = rsvps; }
 }

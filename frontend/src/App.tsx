@@ -4,89 +4,91 @@ import LoginPage from './pages/LoginPage';
 import LandingPage from './pages/LandingPage';
 import GiftAddPage from './pages/GiftAddPage';
 import Navbar from './components/Navbar';
-import { useState } from 'react';
-import type { AuthResponse } from './types';
+import { type JSX } from 'react';
 import GiftListPage from './pages/GiftListPage';
 import EventListPage from './pages/EventListPage';
 import EventDetailPage from './pages/EventDetailPage';
 import CreateEventPage from './pages/CreateEventPage';
 import MyEventsPage from './pages/MyEventsPage';
+import { AuthProvider,useAuth } from './context/AuthContext';
 
-// Main App Component
+function getStoredUser() {
+  const userJson = localStorage.getItem('user');
+  return userJson ? JSON.parse(userJson) : null;
+}
+
+function ProtectedRoute({ children }: { children: JSX.Element }) {
+  const { user:contextUser } = useAuth();
+  const user = contextUser || getStoredUser();
+  return user ? children : <Navigate to='/login'/>;
+}
+
+
 function App() {
-  const [currentUser, setCurrentUser] = useState<AuthResponse | null>(() => {
-    // Check if user data exists in localStorage on app start
-    const savedUser = localStorage.getItem('user');
-    return savedUser ? JSON.parse(savedUser) : null;
-  });
-
-  const handleLoginSuccess = (userData: AuthResponse) => {
-    setCurrentUser(userData);
-    // Save user data to localStorage
-    localStorage.setItem('user', JSON.stringify(userData));
-  };
-
-  const handleLogout = () => {
-    setCurrentUser(null);
-    // Remove user data from localStorage
-    localStorage.removeItem('user');
-  };
-
   return (
-    <Router>
-      <AppContent 
-        currentUser={currentUser} 
-        onLoginSuccess={handleLoginSuccess} 
-        onLogout={handleLogout} 
-      />
-    </Router>
+    <AuthProvider>
+      <Router>
+        <AppContent/>
+      </Router>
+    </AuthProvider>
   );
 }
 
-// AppContent uses useLocation() (must be inside Router)
-function AppContent({
-  currentUser,
-  onLoginSuccess,
-  onLogout,
-}: {
-  currentUser: AuthResponse | null;
-  onLoginSuccess: (userData: AuthResponse) => void;
-  onLogout: () => void;
-}) {
+function AppContent() {
   const location = useLocation();
   const hideNavbarOn = ['/login', '/register'];
   const showNavbar = !hideNavbarOn.includes(location.pathname);
 
+  const { user,login } = useAuth();
+  console.log("AppContent user:", user);
+
   return (
     <>
-      {showNavbar && <Navbar user={currentUser} onLogout={onLogout} />}
-
+      {showNavbar && <Navbar/>}
       <Routes>
         {/* Public Routes */}
-        <Route path="/" element={<LandingPage user={currentUser} />} />
-        <Route path="/register" element={
-          currentUser ? <Navigate to="/" /> : <RegistrationPage />
-        } />
-        <Route path="/login" element={
-          currentUser ? <Navigate to="/" /> : <LoginPage onLoginSuccess={onLoginSuccess} />
-        } />
+        <Route path="/" element={<LandingPage />} />
+        <Route 
+          path="/register" 
+          element={
+            user ? <Navigate to="/" /> : <RegistrationPage />
+        } 
+        />
+        <Route 
+          path="/login" 
+          element={
+          user ? <Navigate to="/" /> 
+          : <LoginPage onLoginSuccess={(authResponse) => login(authResponse.user)}/>} 
+        />
         <Route path="/events" element={<EventListPage />} />
         <Route path="/event/:id" element={<EventDetailPage />} />
         
         {/* Protected Routes - Require Authentication */}
-        <Route path="/gifts" element={
-          currentUser ? <GiftListPage /> : <Navigate to="/login" />
+        <Route 
+          path="/gifts" 
+          element={
+          <ProtectedRoute>
+            <GiftListPage />
+          </ProtectedRoute>
         } />
-        
-        {/* Organizer Only Routes */}
-        <Route path="/create-event" element={
-          <CreateEventPage />
+        <Route 
+          path="/create-event" 
+          element={
+          <ProtectedRoute>
+            <CreateEventPage />
+          </ProtectedRoute>
         } />
-        <Route path="/my-events" element={
-          <MyEventsPage />
+        <Route 
+          path="/my-events" 
+          element={
+          <ProtectedRoute>
+            <MyEventsPage />
+          </ProtectedRoute>
         } />
         <Route path="/add-gift" element={
-          <GiftAddPage />
+          <ProtectedRoute>
+            <GiftAddPage />
+          </ProtectedRoute>
         } />
         
         {/* Redirect unknown routes */}

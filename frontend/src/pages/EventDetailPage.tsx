@@ -122,7 +122,7 @@ const EventDetailPage: React.FC = () => {
     if (!userData) return false;
     
     const user = JSON.parse(userData);
-    return user.userId === event.organizer.id;
+    return user.userId === event.creator.id;
   };
 
   return (
@@ -172,7 +172,7 @@ const EventDetailPage: React.FC = () => {
           
           <div className="detail-item">
             <span className="detail-label">👤 Organizer:</span>
-            <span className="detail-value">{event.organizer.email}</span>
+            <span className="detail-value">{event.creator.email}</span>
           </div>
           
           <div className="detail-item">

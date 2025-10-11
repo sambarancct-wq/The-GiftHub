@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface EventRepository extends JpaRepository<Event, Long> {
@@ -17,4 +18,5 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     boolean existsByNameAndCreator(String name, User creatorUser);
     List<Event> findByCreatorId(Long creatorId);
     List<Event> findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(String query, String query2);
+    Optional<Event> findByEventKey(String eventKey);
 }

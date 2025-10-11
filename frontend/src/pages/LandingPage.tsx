@@ -1,9 +1,17 @@
 import { FaSearch } from 'react-icons/fa';
 import '../styles/LandingPage.css';
-import type { LandingPageProps } from '../types';
+import { useAuth } from '../context/AuthContext';
+
+function getStoredUser() {
+  const userJson = localStorage.getItem('user');
+  return userJson ? JSON.parse(userJson) : null;
+}
 
 // The correct way to declare a functional component with destructured props
-const LandingPage = ({ user }: LandingPageProps ) => {
+const LandingPage = () => {
+  const { user:contextUser } = useAuth(); 
+  const user = contextUser || getStoredUser();
+  
   return (
     <div className="landing-container">
       <main className="landing-main">

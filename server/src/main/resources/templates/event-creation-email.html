@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Created Successfully</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+        }
+        .content {
+            background: #f9f9f9;
+            padding: 30px;
+            border-radius: 0 0 10px 10px;
+        }
+        .event-details {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .event-key {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+            font-family: monospace;
+            font-size: 18px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        .button {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 10px 5px;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎉 Your Event Has Been Created!</h1>
+        <p>You're all set to start inviting guests to <strong th:text="${event.name}">Event Name</strong></p>
+    </div>
+    
+    <div class="content">
+        <h2>Event Details</h2>
+        
+        <div class="event-details">
+            <p><strong>Event Name:</strong> <span th:text="${event.name}">Event Name</span></p>
+            <p><strong>Date & Time:</strong> <span th:text="${eventDate}">Event Date</span></p>
+            <p><strong>Location:</strong> <span th:text="${event.location} ?: 'To be announced'">Location</span></p>
+            <p><strong>Description:</strong> <span th:text="${event.description}">Event Description</span></p>
+            <p><strong>Event Type:</strong> <span th:text="${event.type}">Event Type</span></p>
+        </div>
+
+        <h3>Your Event Key</h3>
+        <div class="event-key" th:text="${eventKey}">EVT123456789</div>
+        <p>Share this key with your guests so they can find your event and RSVP!</p>
+
+        <h3>Next Steps</h3>
+        <ol>
+            <li>Send invitations to your guests using the event dashboard</li>
+            <li>Share the event key with invited guests</li>
+            <li>Track RSVPs and manage your event</li>
+        </ol>
+
+        <div style="text-align: center; margin: 30px 0;">
+            <a th:href="${dashboardUrl}" class="button">Go to Event Dashboard</a>
+        </div>
+
+        <div class="footer">
+            <p>If you have any questions, please contact our support team.</p>
+            <p>Thank you for using GiftHub! 🎁</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { eventAPI } from "../services/api";
+import { useAuth } from "../context/AuthContext";
 import "../styles/CreateEventPage.css";
 
 interface EventFormData {
@@ -9,6 +10,11 @@ interface EventFormData {
   date: string;
   location: string;
   type: "BIRTHDAY" | "WEDDING" | "ANNIVERSARY" | "HOLIDAY" | "OTHER";
+}
+
+function getStoredUser() {
+  const userJson = localStorage.getItem('user');
+  return userJson ? JSON.parse(userJson) : null;
 }
 
 const CreateEventPage: React.FC = () => {
@@ -23,6 +29,7 @@ const CreateEventPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   const navigate = useNavigate();
+  const { user: contextUser } = useAuth();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -36,29 +43,24 @@ const CreateEventPage: React.FC = () => {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
-
+    const user = contextUser || getStoredUser();
     try {
-      // Get current user from localStorage
-      const userData = localStorage.getItem('user');
-      if (!userData) {
+      // Check if user is authenticated
+      if (!user || !user.userId) {
         setError("Please login first");
-        return;
-      }
-
-      const user = JSON.parse(userData);
-      if (!user.isOrganizer) {
-        setError("Only organizers can create events");
+        setIsLoading(false);
         return;
       }
 
       // Validate form
       if (!formData.name.trim() || !formData.description.trim() || !formData.date) {
         setError("Please fill in all required fields");
+        setIsLoading(false);
         return;
       }
 
       // Create event
-      const response = await eventAPI.createEvent(formData, user.userId);
+      const response = await eventAPI.createEvent(formData, user.id);
       
       alert("🎉 Event created successfully!");
       

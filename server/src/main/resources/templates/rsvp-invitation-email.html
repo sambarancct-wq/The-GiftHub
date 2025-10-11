@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>You're Invited!</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+        }
+        .content {
+            background: #f9f9f9;
+            padding: 30px;
+            border-radius: 0 0 10px 10px;
+        }
+        .event-details {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .rsvp-buttons {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 10px;
+            font-weight: bold;
+        }
+        .accept-button {
+            background: #00b894;
+            color: white;
+        }
+        .decline-button {
+            background: #636e72;
+            color: white;
+        }
+        .event-key {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+            font-family: monospace;
+            font-size: 16px;
+            margin: 20px 0;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎊 You're Invited!</h1>
+        <p><strong th:text="${creatorName}">Host</strong> has invited you to an event</p>
+    </div>
+    
+    <div class="content">
+        <h2>Event Details</h2>
+        
+        <div class="event-details">
+            <p><strong>Event:</strong> <span th:text="${event.name}">Event Name</span></p>
+            <p><strong>Date & Time:</strong> <span th:text="${eventDate}">Event Date</span></p>
+            <p><strong>Location:</strong> <span th:text="${event.location} ?: 'To be announced'">Location</span></p>
+            <p><strong>Description:</strong> <span th:text="${event.description}">Event Description</span></p>
+            <p><strong>Hosted by:</strong> <span th:text="${creatorName}">Host Name</span></p>
+        </div>
+
+        <h3>Please RSVP</h3>
+        <p>Let <span th:text="${creatorName}">the host</span> know if you can make it:</p>
+        
+        <div class="rsvp-buttons">
+            <a th:href="${acceptUrl}" class="button accept-button">🎉 I'll Be There!</a>
+            <a th:href="${declineUrl}" class="button decline-button">😔 Sorry, Can't Make It</a>
+        </div>
+
+        <div class="event-key">
+            <p><strong>Event Key:</strong> <code th:text="${eventKey}">EVT123456789</code></p>
+            <p>Use this key to find the event and view the gift registry after you RSVP!</p>
+        </div>
+
+        <p>After RSVPing, you can visit the event page to see the gift registry and browse available gifts.</p>
+
+        <div style="text-align: center; margin: 20px 0;">
+            <a th:href="${eventSearchUrl}" class="button" style="background: #0984e3;">🔍 Find Event & Browse Gifts</a>
+        </div>
+
+        <div class="footer">
+            <p>This invitation was sent via GiftHub - Making gift registries easy! 🎁</p>
+        </div>
+    </div>
+</body>
+</html>
