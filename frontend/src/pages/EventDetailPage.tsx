@@ -90,8 +90,8 @@ const EventDetailPage: React.FC = () => {
 
   const giftStats = {
     total: gifts.length,
-    available: gifts.filter(g => g.status === 'AVAILABLE').length,
-    reserved: gifts.filter(g => g.status === 'RESERVED').length,
+    available: gifts.filter(g => g.status === 'PLANNED').length,
+    reserved: gifts.filter(g => g.status === 'CANCELLED').length,
     purchased: gifts.filter(g => g.status === 'PURCHASED').length
   };
 
@@ -122,7 +122,7 @@ const EventDetailPage: React.FC = () => {
     if (!userData) return false;
     
     const user = JSON.parse(userData);
-    return !!user && event?.creator?.id && user.userId === event.creator.id;
+    return !!user && event.creator?.userId && user.userId === event.creator.userId;
   };
 
   return (
@@ -286,7 +286,7 @@ const EventDetailPage: React.FC = () => {
                   )}
                   
                   <div className="gift-actions">
-                    {gift.status === 'AVAILABLE' && (
+                    {gift.status === 'PURCHASED' && (
                       <button className="reserve-btn">Reserve Gift</button>
                     )}
                     <button className="view-btn">View Details</button>

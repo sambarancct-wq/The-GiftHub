@@ -1,145 +1,167 @@
+/* --- Page Background & Container --- */
 .event-gifts-page {
-  max-width: 1200px;
+  width: 100%;
   margin: 0 auto;
-  padding: 20px;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #ece9f6 0%, #f9fcff 100%);
+  padding: 36px 20px 36px 20px;
 }
 
+/* --- Header --- */
 .page-header {
   text-align: center;
-  margin-bottom: 40px;
-  padding: 30px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  margin-bottom: 48px;
+  padding: 38px 18px 30px 18px;
+  background: linear-gradient(135deg, #6a82fb 0%, #fc5c7d 100%);
   color: white;
-  border-radius: 15px;
+  border-radius: 18px;
+  box-shadow: 0 6px 32px rgba(80, 80, 150, 0.17);
+  position: relative;
+  overflow: hidden;
 }
-
+.page-header::before {
+  content: "";
+  position: absolute;
+  top: -38px; left: -30px; right: -38px; bottom: -35px;
+  background: radial-gradient(ellipse at right 60% bottom -40%, #ffffff24 25%, #0000 90%);
+  z-index: 0;
+}
+.page-header > * {
+  position: relative;
+  z-index: 1;
+}
 .page-header h1 {
-  font-size: 2.5rem;
-  margin-bottom: 10px;
+  font-size: 2.6rem;
+  margin-bottom: 12px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
 }
-
 .page-header h2 {
   font-size: 1.8rem;
-  margin-bottom: 15px;
-  opacity: 0.9;
+  margin-bottom: 17px;
+  opacity: 0.93;
 }
-
 .event-description {
-  font-size: 1.1rem;
+  font-size: 1.14rem;
   margin-bottom: 10px;
-  opacity: 0.9;
+  opacity: 0.89;
 }
-
 .event-date {
-  font-size: 1rem;
-  opacity: 0.8;
+  font-size: 1.05rem;
+  opacity: 0.83;
 }
 
+/* --- Gifts Section --- */
 .gifts-section {
-  background: white;
-  border-radius: 15px;
-  padding: 30px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background: #fff;
+  border-radius: 19px;
+  padding: 33px;
+  box-shadow: 0 4px 18px rgba(59, 93, 192, 0.14);
+  margin-bottom: 40px;
 }
 
+/* --- Section Header --- */
 .section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 30px;
+  flex-wrap: wrap;
+  gap: 10px;
 }
-
 .section-header h3 {
-  font-size: 1.5rem;
-  color: #333;
+  font-size: 1.55rem;
+  color: #35437c;
+  font-weight: 700;
+  margin-bottom: 0;
 }
 
+/* --- Add Gift Button --- */
 .add-gift-btn {
   background: #00b894;
   color: white;
   border: none;
   padding: 12px 24px;
   border-radius: 8px;
-  font-size: 1rem;
+  font-size: 1.06rem;
   cursor: pointer;
-  transition: background 0.3s;
+  font-weight: 700;
+  transition: background 0.2s, transform 0.17s;
+}
+.add-gift-btn:hover,
+.add-gift-btn:focus {
+  background: #00916e;
+  transform: scale(1.03);
+  outline: 2px solid #00b894;
+  outline-offset: 1.5px;
 }
 
-.add-gift-btn:hover {
-  background: #00a085;
-}
-
-/* Add Gift Form */
+/* --- Add Gift Form Overlay --- */
 .add-gift-form-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.47);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
 }
 
+/* --- Add Gift Form --- */
 .add-gift-form {
-  background: white;
-  padding: 30px;
-  border-radius: 15px;
-  width: 90%;
-  max-width: 500px;
-  max-height: 90vh;
+  background: #fff;
+  padding: 38px 22px;
+  border-radius: 23px;
+  width: 97%;
+  max-width: 555px;
+  max-height: 95vh;
   overflow-y: auto;
+  box-shadow: 0 7px 32px rgba(114,122,224,0.14);
 }
-
 .add-gift-form h3 {
   margin-bottom: 20px;
-  color: #333;
+  color: #37427b;
+  font-size: 1.21rem;
+  font-weight: 700;
 }
-
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 21px;
 }
-
 .form-group label {
   display: block;
-  margin-bottom: 5px;
+  margin-bottom: 6px;
   font-weight: 600;
-  color: #333;
+  color: #37427b;
 }
-
 .form-group input,
 .form-group textarea,
 .form-group select {
   width: 100%;
-  padding: 10px;
-  border: 2px solid #ddd;
+  padding: 11px;
+  border: 2px solid #dfd6fa;
   border-radius: 8px;
   font-size: 1rem;
-  transition: border-color 0.3s;
+  transition: border-color 0.2s;
+  background: #fafaff;
 }
-
 .form-group input:focus,
 .form-group textarea:focus,
 .form-group select:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: #6a82fb;
+  background: #ece9f6;
 }
-
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 15px;
 }
-
 .form-actions {
   display: flex;
   gap: 15px;
   justify-content: flex-end;
-  margin-top: 25px;
+  margin-top: 28px;
 }
-
 .cancel-btn {
   background: #95a5a6;
   color: white;
@@ -147,8 +169,8 @@
   padding: 12px 24px;
   border-radius: 8px;
   cursor: pointer;
+  font-weight: 700;
 }
-
 .submit-btn {
   background: #667eea;
   color: white;
@@ -156,179 +178,204 @@
   padding: 12px 24px;
   border-radius: 8px;
   cursor: pointer;
+  font-weight: 700;
+  transition: background 0.2s;
+}
+.submit-btn:hover,
+.submit-btn:focus {
+  background: #37427b;
 }
 
-/* Gifts Grid */
+/* --- Gifts Grid --- */
 .gifts-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 25px;
+  grid-template-columns: repeat(auto-fill, minmax(325px, 1fr));
+  gap: 33px;
+}
+@media (max-width: 900px) {
+  .gifts-grid { grid-template-columns: 1fr 1fr; gap: 24px; }
+}
+@media (max-width: 600px) {
+  .gifts-grid { grid-template-columns: 1fr; gap: 18px; }
 }
 
-/* Gift Card */
+/* --- Gift Card --- */
 .gift-card {
   background: white;
-  border-radius: 12px;
+  border-radius: 18px;
   overflow: hidden;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s, box-shadow 0.3s;
-  border: 1px solid #eee;
+  box-shadow: 0 6px 24px rgba(88, 80, 150, 0.09);
+  transition: transform 0.2s, box-shadow 0.2s, border 0.22s;
+  border: 2px solid #f2f4fd;
+  display: flex;
+  flex-direction: column;
 }
-
 .gift-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+  transform: translateY(-6px) scale(1.025);
+  box-shadow: 0 12px 32px rgba(90,98,210,.17);
+  border: 2px solid #667eea;
 }
 
+/* --- Gift Image --- */
 .gift-image {
-  height: 200px;
-  background: #f8f9fa;
+  height: 210px;
+  background: linear-gradient(105deg, #e0e7ff 0%, #f8fcff 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
 }
-
 .gift-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  border-radius: 0 0 16px 16px;
+  transition: filter 0.17s;
 }
-
+.gift-card:hover .gift-image img {
+  filter: brightness(1.07) saturate(1.09);
+}
 .gift-placeholder {
   font-size: 4rem;
 }
-
 .gift-info {
-  padding: 20px;
+  padding: 23px 20px 21px 20px;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
 }
-
 .gift-info h3 {
-  margin-bottom: 10px;
-  color: #333;
-  font-size: 1.2rem;
+  margin-bottom: 11px;
+  color: #37427b;
+  font-size: 1.22rem;
+  font-weight: 700;
 }
-
 .gift-description {
   color: #666;
   margin-bottom: 15px;
-  line-height: 1.4;
+  line-height: 1.44;
+  font-size: 1rem;
 }
-
+/* Gift Details Row */
 .gift-details {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
+  gap: 12px;
 }
-
 .gift-price {
-  font-size: 1.3rem;
+  font-size: 1.37rem;
   font-weight: bold;
   color: #00b894;
+  letter-spacing: 0.01em;
 }
-
 .gift-store {
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #666;
+  color: #6a6a8e;
+  font-size: 0.96rem;
 }
-
 .store-logo {
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
 }
-
+/* --- Gift Status --- */
 .gift-status {
-  padding: 6px 12px;
-  border-radius: 20px;
+  padding: 7px 16px;
+  border-radius: 23px;
   color: white;
-  font-size: 0.8rem;
-  font-weight: 600;
-  text-align: center;
-  margin-bottom: 15px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  margin-bottom: 13px;
+  background: linear-gradient(95deg, #667eea 40%, #4c56c6 100%);
+  box-shadow: 0 1px 4px #dde1fa22;
 }
-
-.view-product-btn {
+.gift-card.reserved .gift-status {
+  background: linear-gradient(95deg, #ffb366, #ea5a47 90%);
+}
+.gift-card.purchased .gift-status {
+  background: #00b894;
+}
+/* --- View Product / Gift CTA --- */
+.view-product-btn,
+.add-first-gift-btn {
   display: block;
   width: 100%;
   background: #667eea;
   color: white;
   text-align: center;
-  padding: 10px;
-  border-radius: 8px;
+  padding: 11px;
+  border-radius: 9px;
   text-decoration: none;
-  font-weight: 600;
-  transition: background 0.3s;
+  font-weight: 700;
+  font-size: 1.07em;
+  transition: background 0.28s, transform 0.18s;
+  box-shadow: 0 3px 15px rgba(107, 97, 199, 0.07);
+  margin-top: 0.2em;
+}
+.view-product-btn:hover,
+.add-first-gift-btn:hover {
+  background: #3a5a97;
+  transform: translateY(-1px) scale(1.03);
+}
+.add-first-gift-btn {
+  margin-top: 22px;
+  padding: 15px 30px;
+  font-size: 1.09rem;
 }
 
-.view-product-btn:hover {
-  background: #5a6fd8;
-}
-
-/* No Gifts State */
+/* --- No Gifts / Loading / Error States --- */
 .no-gifts {
   text-align: center;
-  padding: 60px 20px;
-  color: #666;
+  padding: 68px 20px;
+  color: #7b7da9;
 }
-
 .no-gifts-icon {
-  font-size: 4rem;
-  margin-bottom: 20px;
+  font-size: 4.2rem;
+  margin-bottom: 22px;
 }
-
 .no-gifts h4 {
-  font-size: 1.5rem;
+  font-size: 1.52rem;
   margin-bottom: 10px;
-  color: #333;
+  color: #37427b;
+  font-weight: 700;
 }
-
-.add-first-gift-btn {
-  background: #667eea;
-  color: white;
-  border: none;
-  padding: 15px 30px;
-  border-radius: 8px;
-  font-size: 1.1rem;
-  cursor: pointer;
-  margin-top: 20px;
-}
-
-/* Loading and Error States */
-.loading, .error-message {
+.loading,
+.error-message {
   text-align: center;
-  padding: 60px 20px;
-  font-size: 1.2rem;
+  padding: 70px 22px;
+  font-size: 1.23rem;
 }
-
 .error-message {
   color: #e74c3c;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-  .event-gifts-page {
-    padding: 15px;
-  }
-  
-  .section-header {
-    flex-direction: column;
-    gap: 15px;
-    align-items: stretch;
-  }
-  
-  .gifts-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .form-row {
-    grid-template-columns: 1fr;
-  }
-  
-  .add-gift-form {
-    width: 95%;
-    padding: 20px;
-  }
+/* --- Responsive --- */
+@media (max-width: 1200px) {
+  .event-gifts-page { max-width: 99vw; }
+}
+@media (max-width: 900px) {
+  .event-gifts-page { padding: 18px; }
+  .gifts-section { padding: 21px; }
+  .section-header { flex-direction: column; gap: 15px; align-items: stretch; }
+  .add-gift-form { width: 99%; padding: 18px; }
+}
+@media (max-width: 600px) {
+  .event-gifts-page { padding: 9px; }
+  .gifts-section { padding: 11px; }
+  .add-gift-form { padding: 12px; }
+  .gifts-grid { gap: 14px; }
+}
+
+/* --- Accessibility Focus Styles --- */
+input:focus,
+textarea:focus,
+select:focus,
+button:focus,
+.add-gift-btn:focus,
+.view-product-btn:focus {
+  outline: 2px solid #667eea;
+  outline-offset: 2.5px;
 }

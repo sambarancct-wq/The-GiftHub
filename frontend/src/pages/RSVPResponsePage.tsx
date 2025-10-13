@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import '../styles/RSVPResponsePage.css';
 
 const RSVPResponsePage: React.FC = () => {
   const { rsvpId } = useParams();
@@ -14,8 +15,9 @@ const RSVPResponsePage: React.FC = () => {
   }, []);
 
   const submitRSVP = async () => {
+    console.log("Submitting RSVP with", rsvpId, response);
     try {
-      const res = await fetch(`/api/rsvp/${rsvpId}/respond?response=${response}`, {
+      const res = await fetch(`http://localhost:8080/api/rsvp/${rsvpId}/respond?response=${response}`, {
         method: 'POST'
       });
       
@@ -23,7 +25,7 @@ const RSVPResponsePage: React.FC = () => {
         if (response === 'accepted') {
           setMessage('🎉 Thank you for confirming! You can now browse and add gifts.');
           setTimeout(() => {
-            navigate('/find-event'); // Redirect to event search page
+            navigate('/search-event'); // Redirect to event search page
           }, 3000);
         } else {
           setMessage('😔 Thanks for letting us know. We\'ll miss you!');

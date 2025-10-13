@@ -68,7 +68,7 @@ function AppContent() {
         />
         <Route path="/events" element={<EventListPage />} />
         <Route path="/event/:id" element={<EventDetailPage />} />        
-        <Route path="/find-event" element={<FindEventPage />} />
+        <Route path="/search-event" element={<FindEventPage />} />
         <Route path="/rsvp/:rsvpId/respond/:response" element={<RSVPResponsePage />} />
         
         {/* Protected Routes - Require Authentication */}

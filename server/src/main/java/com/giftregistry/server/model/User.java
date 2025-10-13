@@ -40,6 +40,11 @@ public class User {
         this.updatedAt = LocalDateTime.now();
     }
     
+    public User(Long id) {
+        this();
+        this.id = id;
+    }
+    
     public User(String email, String password) {
         this();
         this.email = email;

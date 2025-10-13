@@ -30,7 +30,9 @@ export interface Gift {
   notes?: string;
   price: number;
   image?: string;
-  status: 'AVAILABLE' | 'RESERVED' | 'PURCHASED';
+  description?: string;
+  reservedBy?: User;
+  status: 'PLANNED' | 'PURCHASED' | 'CANCELLED';
   event?: Event;
   createdAt: string;
   updatedAt: string;

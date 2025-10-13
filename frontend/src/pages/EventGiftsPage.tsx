@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from 'react';
@@ -5,7 +6,11 @@ import { useParams } from 'react-router-dom';
 //import { useAuth } from '../context/AuthContext';
 import '../styles/EventGiftsPage.css';
 
+const user = JSON.parse(localStorage.getItem('user') || '{}');
+
 interface Gift {
+  plannedBy: any;
+  recipient: string;
   id: number;
   name: string;
   description: string;
@@ -13,7 +18,7 @@ interface Gift {
   imageUrl: string;
   productUrl: string;
   store: string;
-  status: 'AVAILABLE' | 'RESERVED' | 'PURCHASED';
+  status: 'PLANNED' | 'CANCELLED' | 'PURCHASED';
   reservedBy?: {
     id: number;
     username: string;
@@ -21,12 +26,13 @@ interface Gift {
 }
 
 interface AddGiftFormProps {
-  onSubmit: (giftData: any) => void;
+  onSubmit: (giftData: any,imageFile:any) => void;
   onCancel: () => void;
 }
 
 interface GiftCardProps {
   gift: Gift;
+  onRemove: (giftId: number) => void;
 }
 
 // AddGiftForm Component
@@ -35,10 +41,12 @@ const AddGiftForm: React.FC<AddGiftFormProps> = ({ onSubmit, onCancel }) => {
     name: '',
     description: '',
     price: '',
+    recipient: '',
     imageUrl: '',
     productUrl: '',
-    store: 'AMAZON'
+    store: 'OTHER'
   });
+  const [imageFile, setImageFile] = useState<File | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -48,12 +56,16 @@ const AddGiftForm: React.FC<AddGiftFormProps> = ({ onSubmit, onCancel }) => {
     }));
   };
 
+  const handleImageChange = (e: { target: { files: any[]; }; }) => {
+    setImageFile(e.target.files?.[0] ?? null);
+  }
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit({
       ...formData,
-      price: parseFloat(formData.price) || 0
-    });
+      price: parseFloat(formData.price) || 0},
+      imageFile);
   };
 
   return (
@@ -71,6 +83,11 @@ const AddGiftForm: React.FC<AddGiftFormProps> = ({ onSubmit, onCancel }) => {
               placeholder="e.g., Coffee Maker, Book, etc."
               required
             />
+          </div>
+
+          <div className="form-group">
+            <label>Recipient *</label>
+            <input name="recipient" value={formData.recipient} onChange={handleChange} required />
           </div>
 
           <div className="form-group">
@@ -145,9 +162,9 @@ const AddGiftForm: React.FC<AddGiftFormProps> = ({ onSubmit, onCancel }) => {
 };
 
 // GiftCard Component
-const GiftCard: React.FC<GiftCardProps> = ({ gift }) => {
+const GiftCard: React.FC<GiftCardProps> = ({ gift,onRemove }) => {
   //const { user } = useAuth();
-
+  const showRemove = user?.id && gift.plannedBy?.id === user.id;
   const getStoreLogo = (store: string) => {
     switch (store) {
       case 'AMAZON':
@@ -156,32 +173,6 @@ const GiftCard: React.FC<GiftCardProps> = ({ gift }) => {
         return 'https://cdn-icons-png.flaticon.com/512/3481/3481079.png';
       default:
         return 'https://cdn-icons-png.flaticon.com/512/1170/1170678.png';
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'AVAILABLE':
-        return '#00b894';
-      case 'RESERVED':
-        return '#fdcb6e';
-      case 'PURCHASED':
-        return '#636e72';
-      default:
-        return '#00b894';
-    }
-  };
-
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'AVAILABLE':
-        return 'Available';
-      case 'RESERVED':
-        return `Reserved by ${gift.reservedBy?.username}`;
-      case 'PURCHASED':
-        return 'Purchased';
-      default:
-        return 'Available';
     }
   };
 
@@ -207,11 +198,11 @@ const GiftCard: React.FC<GiftCardProps> = ({ gift }) => {
           </div>
         </div>
 
-        <div 
-          className="gift-status"
-          style={{ backgroundColor: getStatusColor(gift.status) }}
-        >
-          {getStatusText(gift.status)}
+        <div className="gift-recipient">👤 <strong>For:</strong> {gift.recipient}</div>
+        <div className="gift-planner">📝 <strong>Added by:</strong> {gift.plannedBy?.username || '-'}</div>
+        <div className="gift-actions">
+          {showRemove &&
+            <button className="cancel-btn" onClick={() => onRemove(gift.id)}>Remove</button>}
         </div>
 
         {gift.productUrl && (
@@ -259,10 +250,13 @@ const EventGiftsPage: React.FC = () => {
       setEvent(eventData);
 
       // Fetch gifts for this event
-      const giftsResponse = await fetch(`/api/events/${eventId}/gifts`);
+      const giftsResponse = await fetch(`/api/gifts/event/${eventId}/user/${user.userId}`);
       if (giftsResponse.ok) {
         const giftsData = await giftsResponse.json();
         setGifts(giftsData);
+      }else {
+        console.error('Failed to fetch gifts:', giftsResponse.status);
+        setGifts([]); // Set empty array if no gifts found
       }
     } catch (err) {
       setError('Failed to load event and gifts');
@@ -272,31 +266,57 @@ const EventGiftsPage: React.FC = () => {
     }
   };
 
-  const addGift = async (giftData: any) => {
+  const addGift = async (giftData: any, imageFile: any) => {
     try {
-      const response = await fetch(`/api/events/${eventId}/gifts`, {
+      // CORRECTED: Use the correct gift creation endpoint
+      const formData = new FormData();
+      formData.append('name', giftData.name);
+      formData.append('recipient', 'Event Guest'); // Default recipient
+      formData.append('description', giftData.description || '');
+      formData.append('price', giftData.price.toString());
+      formData.append('store',giftData.store || 'OTHER');
+      formData.append('eventId', eventId!);
+      formData.append('plannedBy', user.userId);
+      formData.append('productUrl', giftData.productUrl || '');
+
+      // Add image if provided via URL
+      if (imageFile) {
+        // Convert image URL to blob (simplified approach)
+        formData.append('image', imageFile);
+      } else if (giftData.imageUrl) {
+        formData.append('imageUrl', giftData.imageUrl);
+      }
+
+      const response = await fetch('/api/gifts', {
         method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ...giftData,
-          eventId: parseInt(eventId!)
-        })
+        body: formData // Using FormData for multipart request
       });
 
       if (!response.ok) {
-        throw new Error('Failed to add gift');
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to add gift');
       }
 
       // Refresh the gifts list
       fetchEventAndGifts();
       setShowAddGift(false);
-    } catch (err) {
-      setError('Failed to add gift');
+    } catch (err: any) {
+      setError(err.message || 'Failed to add gift');
       console.error('Error adding gift:', err);
     }
   };
+
+  const removeGift = async (giftId: any) => {
+    try {
+      const response = await fetch(`/api/gifts/${giftId}/user/${user.userId}`, {
+        method: 'DELETE'
+      });
+      if (response.ok) fetchEventAndGifts();
+    } catch (err) {
+      // Optionally set error
+    }
+  };
+
 
   if (loading) {
     return (
@@ -367,7 +387,7 @@ const EventGiftsPage: React.FC = () => {
         ) : (
           <div className="gifts-grid">
             {gifts.map(gift => (
-              <GiftCard key={gift.id} gift={gift} />
+              <GiftCard key={gift.id} gift={gift} onRemove={removeGift}/>
             ))}
           </div>
         )}

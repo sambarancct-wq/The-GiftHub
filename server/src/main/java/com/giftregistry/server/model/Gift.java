@@ -1,6 +1,8 @@
 package com.giftregistry.server.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -18,9 +20,6 @@ public class Gift {
     @Column(nullable = false)
     private String recipient;
     
-    @Column(length = 1000)
-    private String notes;
-    
     @Column(nullable = false)
     private BigDecimal price;
     
@@ -30,28 +29,32 @@ public class Gift {
     @Column(columnDefinition = "TEXT")
     private String productUrl;
 
+    @Column(length = 500)
+    private String description;
+
     @Column(nullable = false)
     private String store;
     
+    public enum GiftStatus { PLANNED, CANCELLED, PURCHASED}
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private GiftStatus status = GiftStatus.AVAILABLE;
+    private GiftStatus status = GiftStatus.PLANNED;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id")
     @JsonBackReference("event-gifts")
     private Event event;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "planned_by_id")
+    @JsonIgnore
+    private User plannedBy;
     
     @Column(name = "created_at")
     private LocalDateTime createdAt;
     
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-    
-    // Enum for Gift Status
-    public enum GiftStatus {
-        AVAILABLE, RESERVED, PURCHASED
-    }
     
     // Constructors
     public Gift() {
@@ -81,10 +84,7 @@ public class Gift {
     
     public String getRecipient() { return recipient; }
     public void setRecipient(String recipient) { this.recipient = recipient; }
-    
-    public String getNotes() { return notes; }
-    public void setNotes(String notes) { this.notes = notes; }
-    
+        
     public BigDecimal getPrice() { return price; }
     public void setPrice(BigDecimal price) { this.price = price; }
     
@@ -108,4 +108,10 @@ public class Gift {
     
     public String getStore() { return store; }
     public void setStore(String store) { this.store = store; }
+
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+
+    public User getPlannedBy() { return plannedBy; }
+    public void setPlannedBy(User plannedBy) { this.plannedBy = plannedBy; }
 }

@@ -1,0 +1,94 @@
+/* RSVP Response Page Container */
+.rsvp-response {
+  max-width: 450px;
+  margin: 4rem auto;
+  padding: 2.2rem 1.4rem 2.5rem 1.4rem;
+  background: #f7fafc;
+  border-radius: 14px;
+  box-shadow: 0 6px 32px rgba(60,100,140,0.12);
+  text-align: center;
+  font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+}
+
+/* Main message */
+.rsvp-response h2 {
+  margin-top: 0;
+  margin-bottom: 1.3rem;
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: #194574;
+  letter-spacing: 0.03em;
+}
+
+/* Sub-message */
+.rsvp-response p {
+  font-size: 1.06rem;
+  color: #4e6478;
+  margin-bottom: 1rem;
+}
+
+/* Loader */
+.rsvp-response .loading {
+  color: #6c757d;
+  font-size: 1.07rem;
+  padding-top: 2rem;
+}
+
+/* Error message if any */
+.rsvp-response .error {
+  color: #c0392b;
+  background: #ffeded;
+  border-radius: 7px;
+  padding: 1rem 0.5rem;
+  margin-top: 1.2rem;
+  font-weight: 600;
+}
+
+/* Success (for more emphasis, optional) */
+.rsvp-response .success {
+  color: #2e7d32;
+  background: #eafbea;
+  border-radius: 7px;
+  padding: 1rem 0.5rem;
+  margin-bottom: 1.5rem;
+  font-weight: 500;
+}
+
+.rsvp-response .btn {
+  display: inline-block;
+  background: #0069d9;
+  color: #fff;
+  border-radius: 7px;
+  padding: 0.65em 1.7em;
+  margin: 0.5em 0 0 0;
+  font-size: 1.04em;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+
+.rsvp-response .btn:hover,
+.rsvp-response .btn:focus {
+  background: #194574;
+  text-decoration: none;
+}
+
+/* Emoji accent for message (optional) */
+.rsvp-response h2::before {
+  content: "🎁 ";
+  display: inline-block;
+  font-size: 1.1em;
+  vertical-align: middle;
+  margin-right: 0.1em;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .rsvp-response {
+    padding: 1rem 0.2rem 1.5rem 0.2rem;
+    margin: 2rem auto;
+  }
+  .rsvp-response h2 {
+    font-size: 1.13rem;
+  }
+}

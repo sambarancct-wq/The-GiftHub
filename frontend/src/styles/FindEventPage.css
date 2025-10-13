@@ -1,0 +1,124 @@
+/* Find Event Page Main Container */
+.find-event-page {
+  min-height: 90vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f7fafc;
+}
+
+/* Card-styled container */
+.find-event-container {
+  background: #fff;
+  padding: 2.5rem 2.2rem 2rem 2.2rem;
+  border-radius: 18px;
+  box-shadow: 0 6px 28px rgba(58, 90, 115, 0.11);
+  max-width: 380px;
+  width: 100%;
+}
+
+.find-event-container h1 {
+  font-size: 1.8rem;
+  color: #194574;
+  font-weight: 800;
+  margin-bottom: 0.38em;
+  text-align: center;
+  letter-spacing: 0.018em;
+}
+
+.find-event-container p {
+  color: #506179;
+  font-size: 1.03rem;
+  margin-bottom: 1.6em;
+  text-align: center;
+}
+
+/* Search Box */
+.search-box {
+  display: flex;
+  gap: 0.6em;
+  margin-bottom: 1.9em;
+  justify-content: center;
+}
+
+.search-box input[type="text"] {
+  flex: 1 1 0;
+  font-size: 1.04rem;
+  padding: 0.73em 1em;
+  border-radius: 7px;
+  border: 1.5px solid #dbe5fa;
+  background: #f5f7fc;
+  outline: none;
+  transition: border 0.15s;
+}
+
+.search-box input[type="text"]:focus {
+  border: 1.5px solid #2563eb;
+  background: #eef5fb;
+}
+
+.search-box button {
+  background: #0069d9;
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  padding: 0.67em 1.7em;
+  font-weight: 700;
+  font-size: 1.02em;
+  cursor: pointer;
+  transition: background 0.2s;
+  min-width: 120px;
+}
+
+.search-box button:disabled {
+  background: #b3c7e6;
+  color: #fff;
+  cursor: default;
+}
+
+.search-box button:not(:disabled):hover,
+.search-box button:not(:disabled):focus {
+  background: #194574;
+}
+
+/* Help Text */
+.help-text {
+  background: #eaf4fc;
+  border-radius: 10px;
+  padding: 1.3em 1em;
+  margin-top: 1.7em;
+  text-align: left;
+  box-shadow: 0 1px 6px rgba(59,100,139,0.07);
+}
+
+.help-text h3 {
+  margin: 0 0 0.7em 0;
+  color: #194574;
+  font-size: 1.03rem;
+  font-weight: 600;
+}
+
+.help-text ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.help-text li {
+  font-size: 0.98em;
+  color: #49597c;
+  margin-bottom: 0.43em;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+
+@media (max-width: 600px) {
+  .find-event-container {
+    padding: 1.1rem 0.2rem 1rem 0.2rem;
+    max-width: 98vw;
+  }
+  .help-text {
+    padding: 0.89em 0.32em;
+  }
+}

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import '../styles/FindEventPage.css';
 
 const FindEventPage: React.FC = () => {
   const [eventKey, setEventKey] = useState('');
