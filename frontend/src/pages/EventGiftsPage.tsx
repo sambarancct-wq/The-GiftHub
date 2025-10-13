@@ -9,12 +9,13 @@ import '../styles/EventGiftsPage.css';
 const user = JSON.parse(localStorage.getItem('user') || '{}');
 
 interface Gift {
-  plannedBy: any;
+  plannedById:number;
   recipient: string;
   id: number;
   name: string;
   description: string;
   price: number;
+  image:string;
   imageUrl: string;
   productUrl: string;
   store: string;
@@ -164,7 +165,7 @@ const AddGiftForm: React.FC<AddGiftFormProps> = ({ onSubmit, onCancel }) => {
 // GiftCard Component
 const GiftCard: React.FC<GiftCardProps> = ({ gift,onRemove }) => {
   //const { user } = useAuth();
-  const showRemove = user?.id && gift.plannedBy?.id === user.id;
+  const showRemove = user.userId && gift.plannedById === user.userId;
   const getStoreLogo = (store: string) => {
     switch (store) {
       case 'AMAZON':
@@ -179,8 +180,8 @@ const GiftCard: React.FC<GiftCardProps> = ({ gift,onRemove }) => {
   return (
     <div className="gift-card">
       <div className="gift-image">
-        {gift.imageUrl ? (
-          <img src={gift.imageUrl} alt={gift.name} />
+        {gift.image ? (
+          <img src={gift.image} alt={gift.name} />
         ) : (
           <div className="gift-placeholder">🎁</div>
         )}
@@ -199,7 +200,7 @@ const GiftCard: React.FC<GiftCardProps> = ({ gift,onRemove }) => {
         </div>
 
         <div className="gift-recipient">👤 <strong>For:</strong> {gift.recipient}</div>
-        <div className="gift-planner">📝 <strong>Added by:</strong> {gift.plannedBy?.username || '-'}</div>
+        <div className="gift-planner">📝 <strong>Added by:</strong> {gift.plannedById || '-'}</div>
         <div className="gift-actions">
           {showRemove &&
             <button className="cancel-btn" onClick={() => onRemove(gift.id)}>Remove</button>}
@@ -254,6 +255,7 @@ const EventGiftsPage: React.FC = () => {
       if (giftsResponse.ok) {
         const giftsData = await giftsResponse.json();
         setGifts(giftsData);
+        console.log(giftsData);
       }else {
         console.error('Failed to fetch gifts:', giftsResponse.status);
         setGifts([]); // Set empty array if no gifts found
@@ -271,7 +273,7 @@ const EventGiftsPage: React.FC = () => {
       // CORRECTED: Use the correct gift creation endpoint
       const formData = new FormData();
       formData.append('name', giftData.name);
-      formData.append('recipient', 'Event Guest'); // Default recipient
+      formData.append('recipient', giftData.recipient); // Default recipient
       formData.append('description', giftData.description || '');
       formData.append('price', giftData.price.toString());
       formData.append('store',giftData.store || 'OTHER');
@@ -356,7 +358,7 @@ const EventGiftsPage: React.FC = () => {
 
       <div className="gifts-section">
         <div className="section-header">
-          <h3>Available Gifts ({gifts.length})</h3>
+          <h3>Current Gifts ({gifts.length})</h3>
           <button 
             onClick={() => setShowAddGift(true)} 
             className="add-gift-btn"

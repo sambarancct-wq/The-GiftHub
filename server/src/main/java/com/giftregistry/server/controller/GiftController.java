@@ -6,6 +6,7 @@ import com.giftregistry.server.model.User;
 import com.giftregistry.server.repository.EventRepository;
 import com.giftregistry.server.repository.GiftRepository;
 import com.giftregistry.server.service.ImageService;
+import com.giftregistry.server.dto.GiftDTO;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -33,6 +34,23 @@ public class GiftController {
 
     @Autowired
     private ImageService imageService;
+
+    private GiftDTO mapGiftToDTO(Gift gift) {
+        GiftDTO dto = new GiftDTO();
+        dto.setId(gift.getId());
+        dto.setName(gift.getName());
+        dto.setRecipient(gift.getRecipient());
+        dto.setPrice(gift.getPrice());
+        dto.setImage(gift.getImage());
+        dto.setProductUrl(gift.getProductUrl());
+        dto.setDescription(gift.getDescription());
+        dto.setStore(gift.getStore());
+        dto.setStatus(gift.getStatus() != null ? gift.getStatus().name() : null);
+        dto.setCreatedAt(gift.getCreatedAt());
+        dto.setUpdatedAt(gift.getUpdatedAt());
+        dto.setPlannedById(gift.getPlannedBy() != null ? gift.getPlannedBy().getId() : null);
+        return dto;
+    }
 
     /**
      * Add Gift with Cloudinary Image Upload
@@ -90,26 +108,37 @@ public class GiftController {
     @GetMapping("/event/{eventId}")
     public ResponseEntity<?> getGiftsByEvent(@PathVariable Long eventId) {
         try {
-            java.util.List<Gift> gifts = giftRepository.findByEventId(eventId);
-            return ResponseEntity.ok(gifts);
+            List<Gift> gifts = giftRepository.findByEventId(eventId);
+            List<GiftDTO> dtos = gifts.stream()
+                .map(this::mapGiftToDTO)
+                .toList();
+            return ResponseEntity.ok(dtos);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("message", "Error fetching gifts"));
         }
     }
+
     
     @GetMapping("/event/{eventId}/user/{userId}")
     public ResponseEntity<?> getGiftsForUser(@PathVariable Long eventId, @PathVariable Long userId) {
         Optional<Event> eventOpt = eventRepository.findById(eventId);
-        if (eventOpt.isEmpty()) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "Event not found"));
+        if (eventOpt.isEmpty()) 
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("message", "Event not found"));
         Event event = eventOpt.get();
         if (event.getCreator() != null && event.getCreator().getId().equals(userId)) {
-        // Creator sees nothing!
-        return ResponseEntity.ok(List.of());
-    }
+            // Creator sees nothing!
+            return ResponseEntity.ok(List.of());
+        }
         List<Gift> gifts = giftRepository.findByEventId(eventId);
-        return ResponseEntity.ok(gifts);
+        List<GiftDTO> dtos = gifts.stream()
+            .map(this::mapGiftToDTO)
+            .toList();
+        return ResponseEntity.ok(dtos);
     }
+
     /**
      * Update Gift with Cloudinary
      */
@@ -193,14 +222,19 @@ public class GiftController {
     }
 
     // Keep your existing GET methods (they don't need changes)
-    @GetMapping
+   @GetMapping
     public ResponseEntity<?> getAllGifts() {
         try {
-            return ResponseEntity.ok(giftRepository.findAll());
+            List<Gift> gifts = giftRepository.findAll();
+            List<GiftDTO> dtos = gifts.stream()
+                .map(this::mapGiftToDTO)
+                .toList();
+            return ResponseEntity.ok(dtos);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(Map.of("message", "Error fetching gifts"));
         }
     }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getGiftById(@PathVariable Long id) {
