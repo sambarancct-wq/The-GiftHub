@@ -62,10 +62,10 @@ const CreateEventPage: React.FC = () => {
       // Create event
       const response = await eventAPI.createEvent(formData, user.userId);
       
-      alert("🎉 Event created successfully!");
+      alert("🎉 Event created successfully! Check your email for the event key.");
       
       // Redirect to event detail page or organizer dashboard
-      navigate(`/event/${response.data.event.id}`);
+      navigate(`/event/dashboard/${response.data.event.id}`);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {

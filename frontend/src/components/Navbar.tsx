@@ -62,7 +62,6 @@ const Navbar: React.FC = () => {
               <Link to="/create-event">Create Event</Link>
               <Link to="/events">Browse Events</Link>
               <Link to="/my-events">My Events</Link> {/* All users can see their events */}
-              <Link to="/gifts">All Gifts</Link>
             </div>
           </div>
         ) : (

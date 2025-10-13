@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -125,44 +126,63 @@ public class EventController {
      * Send RSVP invitations
      */
     @PostMapping("/{eventId}/invite")
-    public ResponseEntity<?> sendInvitations(@PathVariable Long eventId, 
-                                           @RequestParam Long creatorId,
-                                           @RequestBody List<String> guestEmails) {
-        try {
-            Optional<Event> eventOptional = eventRepository.findById(eventId);
-            if (eventOptional.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(Map.of("message", "Event not found"));
-            }
+public ResponseEntity<?> sendInvitations(@PathVariable Long eventId, 
+                                       @RequestParam Long creatorId,
+                                       @RequestBody List<String> guestEmails) {
+    try {
+        Optional<Event> eventOptional = eventRepository.findById(eventId);
+        if (eventOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("message", "Event not found"));
+        }
 
-            Event event = eventOptional.get();
-            
-            // Verify the user is the creator
-            if (!event.getCreator().getId().equals(creatorId)) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                        .body(Map.of("message", "Access denied"));
-            }
+        Event event = eventOptional.get();
+        
+        // Verify the user is the creator
+        if (!event.getCreator().getId().equals(creatorId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("message", "Access denied"));
+        }
 
-            // Create RSVP records for each guest
-            for (String email : guestEmails) {
+        List<String> successfulEmails = new ArrayList<>();
+        List<String> failedEmails = new ArrayList<>();
+
+        // Create RSVP records for each guest and send emails
+        for (String email : guestEmails) {
+            try {
                 RSVP rsvp = new RSVP();
                 rsvp.setGuestEmail(email);
                 rsvp.setEvent(event);
                 rsvp.setStatus(RSVP.RSVPStatus.PENDING);
-                rsvpRepository.save(rsvp);
+                RSVP savedRSVP = rsvpRepository.save(rsvp);
 
-        
-            emailService.sendRSVPInvitation(email, event, creatorId);;
+                // Send RSVP invitation email
+                emailService.sendRSVPInvitation(email, event, savedRSVP.getId());
+                successfulEmails.add(email);
+                
+                System.out.println("✅ RSVP invitation sent to: " + email);
+
+            } catch (Exception e) {
+                System.err.println("❌ Failed to send invitation to: " + email + " - " + e.getMessage());
+                failedEmails.add(email + " (" + e.getMessage() + ")");
             }
-
-            return ResponseEntity.ok(Map.of("message", "Invitations sent successfully to " + guestEmails.size() + " guests"));
-
-        } catch (Exception e) {
-            System.err.println("❌ Error sending invitations: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("message", "Error sending invitations"));
         }
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "Invitation process completed");
+        response.put("successful", successfulEmails);
+        response.put("failed", failedEmails);
+        response.put("totalSent", successfulEmails.size());
+        response.put("totalFailed", failedEmails.size());
+
+        return ResponseEntity.ok(response);
+
+    } catch (Exception e) {
+        System.err.println("❌ Error sending invitations: " + e.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("message", "Error sending invitations: " + e.getMessage()));
     }
+}
 
     /**
      * Find event by key (for guests)

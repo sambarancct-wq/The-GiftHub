@@ -2,15 +2,19 @@ import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'r
 import RegistrationPage from './pages/RegistrationPage';
 import LoginPage from './pages/LoginPage';
 import LandingPage from './pages/LandingPage';
-import GiftAddPage from './pages/GiftAddPage';
 import Navbar from './components/Navbar';
 import { type JSX } from 'react';
-import GiftListPage from './pages/GiftListPage';
 import EventListPage from './pages/EventListPage';
 import EventDetailPage from './pages/EventDetailPage';
 import CreateEventPage from './pages/CreateEventPage';
 import MyEventsPage from './pages/MyEventsPage';
-import { AuthProvider,useAuth } from './context/AuthContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
+
+// NEW COMPONENT IMPORTS
+import EventDashboard from './pages/EventDashboard';
+import FindEventPage from './pages/FindEventPage';
+import RSVPResponsePage from './pages/RSVPResponsePage';
+import EventGiftsPage from './pages/EventGiftsPage';
 
 function getStoredUser() {
   const userJson = localStorage.getItem('user');
@@ -18,11 +22,10 @@ function getStoredUser() {
 }
 
 function ProtectedRoute({ children }: { children: JSX.Element }) {
-  const { user:contextUser } = useAuth();
+  const { user: contextUser } = useAuth();
   const user = contextUser || getStoredUser();
   return user ? children : <Navigate to='/login'/>;
 }
-
 
 function App() {
   return (
@@ -36,15 +39,15 @@ function App() {
 
 function AppContent() {
   const location = useLocation();
-  const hideNavbarOn = ['/login', '/register'];
-  const showNavbar = !hideNavbarOn.includes(location.pathname);
+  const hideNavbarOn = ['/login', '/register', '/rsvp'];
+  const showNavbar = !hideNavbarOn.some(path => location.pathname.startsWith(path));
 
-  const { user,login } = useAuth();
+  const { user, login } = useAuth();
   console.log("AppContent user:", user);
 
   return (
     <>
-      {showNavbar && <Navbar/>}
+      {showNavbar && <Navbar />}
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<LandingPage />} />
@@ -52,45 +55,57 @@ function AppContent() {
           path="/register" 
           element={
             user ? <Navigate to="/" /> : <RegistrationPage />
-        } 
+          } 
         />
         <Route 
           path="/login" 
           element={
-          user ? <Navigate to="/" /> 
-          : <LoginPage onLoginSuccess={(authResponse) => login(authResponse.user)}/>} 
+            user ? <Navigate to="/" /> 
+            : <LoginPage onLoginSuccess={
+              (authResponse) => login(authResponse.user)
+            } />
+          } 
         />
         <Route path="/events" element={<EventListPage />} />
-        <Route path="/event/:id" element={<EventDetailPage />} />
+        <Route path="/event/:id" element={<EventDetailPage />} />        
+        <Route path="/find-event" element={<FindEventPage />} />
+        <Route path="/rsvp/:rsvpId/respond/:response" element={<RSVPResponsePage />} />
         
         {/* Protected Routes - Require Authentication */}
         <Route 
-          path="/gifts" 
-          element={
-          <ProtectedRoute>
-            <GiftListPage />
-          </ProtectedRoute>
-        } />
-        <Route 
           path="/create-event" 
           element={
-          <ProtectedRoute>
-            <CreateEventPage />
-          </ProtectedRoute>
-        } />
+            <ProtectedRoute>
+              <CreateEventPage />
+            </ProtectedRoute>
+          } 
+        />
         <Route 
           path="/my-events" 
           element={
-          <ProtectedRoute>
-            <MyEventsPage />
-          </ProtectedRoute>
-        } />
-        <Route path="/add-gift" element={
-          <ProtectedRoute>
-            <GiftAddPage />
-          </ProtectedRoute>
-        } />
+            <ProtectedRoute>
+              <MyEventsPage />
+            </ProtectedRoute>
+          } 
+        />
         
+        <Route 
+          path="/dashboard/:eventId" 
+          element={
+            <ProtectedRoute>
+              <EventDashboard />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/event/:eventId/gifts" 
+          element={
+            <ProtectedRoute>
+              <EventGiftsPage />
+            </ProtectedRoute>
+          } 
+        />
+                
         {/* Redirect unknown routes */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

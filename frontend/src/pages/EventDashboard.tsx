@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import '../styles/EventDashboard.css'
 
 const EventDashboard: React.FC = () => {
   const { eventId } = useParams();
@@ -24,7 +25,7 @@ const EventDashboard: React.FC = () => {
       setLoading(true);
       setError(null);
       // The user object is guaranteed to exist here if the effect runs
-      const response = await fetch(`/api/events/dashboard/${eventId}?creatorId=${user?.id}`);
+      const response = await fetch(`/api/events/dashboard/${eventId}?creatorId=${user?.userId}`);
       
       if (!response.ok) {
         throw new Error('Failed to fetch dashboard');
@@ -50,7 +51,7 @@ const EventDashboard: React.FC = () => {
     
     try {
       // The user object is guaranteed to exist here if the component renders
-      const response = await fetch(`/api/events/${eventId}/invite?creatorId=${user?.id}`, {
+      const response = await fetch(`/api/events/${eventId}/invite?creatorId=${user?.userId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(emails)
@@ -74,7 +75,6 @@ const EventDashboard: React.FC = () => {
   if (error) return <div className="error">Error: {error}</div>;
   if (!dashboard) return <div>No dashboard data found</div>;
 
-  // ... rest of your JSX remains the same
   return (
     <div className="dashboard">
       <h1>Event Dashboard: {dashboard.event.name}</h1>

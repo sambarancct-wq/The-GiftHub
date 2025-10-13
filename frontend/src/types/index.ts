@@ -1,5 +1,5 @@
 export interface User {
-  id: number;
+  userId: number;
   username: string;
   email: string;
   createdAt?: string;
@@ -14,6 +14,7 @@ export interface Event {
   date: string;
   creator?:User;
   creator_id:number;
+  event_key:string;
   description: string;
   location?: string;
   type: 'BIRTHDAY' | 'WEDDING' | 'HOLIDAY' | 'ANNIVERSARY' | 'OTHER';

@@ -1,0 +1,195 @@
+/* Dashboard main container */
+.dashboard {
+  width: 100%;
+  height: 100%;
+  margin: 2rem auto;
+  background: #f8fafd;
+  padding: 2rem 1.5rem 3rem 1.5rem;
+  border-radius: 18px;
+  box-sizing: border-box;
+  box-shadow: 0 6px 24px rgba(58, 90, 115, 0.11);
+  font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+}
+
+/* Title */
+.dashboard h1 {
+  text-align: center;
+  color: #254056;
+  font-size: 2.1rem;
+  font-weight: 700;
+  margin-bottom: 1.8rem;
+}
+
+/* Stats section */
+.stats {
+  display: flex;
+  gap: 1.2rem;
+  justify-content: space-between;
+  margin-bottom: 2.3rem;
+}
+
+.stat-card {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(30, 60, 90, 0.06);
+  padding: 1.1rem 0.8rem;
+  flex: 1 1 0;
+  text-align: center;
+  min-width: 110px;
+}
+
+.stat-card h3 {
+  color: #4e6293;
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.stat-card p {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #1c243b;
+  margin: 0;
+}
+
+/* Emphasize based on status (optional) */
+.stat-card:nth-child(1) p { color: #28a745; } /* Attending */
+.stat-card:nth-child(2) p { color: #ff6b6b; } /* Not Coming */
+.stat-card:nth-child(3) p { color: #ffc107; } /* Pending */
+.stat-card:nth-child(4) p { color: #007bff; } /* Total */
+
+/* Error and loading */
+.loading, .error {
+  text-align: center;
+  color: #6c757d;
+  font-size: 1.18rem;
+  padding: 2rem 0 0.7rem 0;
+}
+
+/* Event Key Section */
+.event-key {
+  background: #fff;
+  margin: 1.5rem 0 2.5rem;
+  border-radius: 10px;
+  padding: 1rem 1.5rem 1.2rem 1.5rem;
+  box-shadow: 0 2px 8px rgba(60, 80, 130, 0.05);
+  text-align: center;
+}
+
+.event-key h3 {
+  color: #254056;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.key-display {
+  margin: 1rem 0 0.3rem 0;
+}
+
+.event-key code {
+  background: #f3f4f8;
+  color: #254056;
+  font-family: 'JetBrains Mono', 'Consolas', 'Menlo', monospace;
+  font-size: 1.1em;
+  padding: 0.23em 1em;
+  border-radius: 7px;
+  user-select: all;
+  display: inline-block;
+}
+
+/* Invitation Section */
+.invite-section {
+  background: #f6fcf9;
+  border: 1.5px dashed #b0eacf;
+  border-radius: 10px;
+  padding: 1.3rem 1.3rem 1rem;
+  margin-top: 2.1rem;
+  text-align: center;
+  box-shadow: 0 2px 10px rgba(60,130,130,0.022);
+}
+
+.invite-section h3 {
+  color: #305e4c;
+  font-size: 1.08rem;
+  font-weight: 600;
+  margin-bottom: 0.9rem;
+}
+
+.invite-section textarea {
+  width: 90%;
+  max-width: 460px;
+  min-width: 190px;
+  font-size: 1.01rem;
+  min-height: 52px;
+  max-height: 140px;
+  border-radius: 7px;
+  border: 1.5px solid #d0e9db;
+  padding: 0.65em 0.85em;
+  resize: vertical;
+  background: #fff;
+  margin-bottom: 1.2rem;
+}
+
+.invite-section textarea:focus {
+  border: 1.5px solid #28a745;
+  outline: none;
+  background: #f8fefb;
+}
+
+.invite-section button {
+  background: #28a745;
+  color: #fff;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  padding: 0.7em 2em;
+  transition: background 0.2s, transform 0.17s;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(52, 160, 73, 0.06);
+  margin-top: 0.4rem;
+}
+
+.invite-section button:hover:not(:disabled) {
+  background: #1e7e34;
+  transform: translateY(-1px) scale(1.03);
+}
+
+.invite-section button:disabled {
+  background: #d4e6d7;
+  color: #9cbfa2;
+  cursor: default;
+}
+
+@media (max-width: 900px) {
+  .dashboard {
+    max-width: 99vw;
+    padding: 1rem 0.5rem 2.7rem;
+  }
+
+  .stats {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
+
+@media (max-width:600px) {
+  .dashboard h1 {
+    font-size: 1.25rem;
+  }
+  .event-key, .invite-section {
+    padding: 0.7rem 0.5rem;
+  }
+  .stat-card p {
+    font-size: 1.2rem;
+  }
+}
+
+/* Accessibility focus for buttons/inputs/links */
+.invite-section button:focus,
+.event-key code:focus,
+textarea:focus {
+  outline: 2px solid #0074d9;
+  outline-offset: 2px;
+}

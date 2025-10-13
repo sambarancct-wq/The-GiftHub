@@ -46,9 +46,13 @@ export const eventAPI = {
   createEvent: (eventData: any, creatorId: number) => 
     api.post(`/events?creatorId=${creatorId}`, eventData),
   
-  getEventsByOrganizer: (creatorId: number) => 
-    api.get(`/events/organizer/${creatorId}`),
-  
+  getEventsByCreator: (creatorId: number) =>{
+    if (!creatorId || creatorId <= 0) {
+      throw new Error('Invalid creator ID');
+    }
+    return api.get(`/events/creator/${creatorId}`);
+  },
+
   getAllPublicEvents: () => api.get('/events/public'),
   
   getEventById: (id: number) => api.get(`/events/${id}`),
@@ -57,6 +61,13 @@ export const eventAPI = {
   updateEvent: (id: number, eventData: any) => api.put(`/events/${id}`, eventData),
   
   deleteEvent: (id: number) => api.delete(`/events/${id}`),
+
+  getRSVPStats: (eventId: number, creatorId: number) => {
+    if (!creatorId || creatorId <= 0) {
+      throw new Error('Invalid creator ID');
+    }
+    return api.get(`/events/dashboard/${eventId}?creatorId=${creatorId}`);
+  },
 };
 
 

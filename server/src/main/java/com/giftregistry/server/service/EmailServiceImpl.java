@@ -1,7 +1,6 @@
 package com.giftregistry.server.service;
 
 import com.giftregistry.server.model.Event;
-import com.giftregistry.server.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -14,7 +13,6 @@ import org.thymeleaf.context.Context;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import java.time.format.DateTimeFormatter;
-import java.util.Locale;
 
 @Service
 public class EmailServiceImpl implements EmailService {
@@ -25,18 +23,30 @@ public class EmailServiceImpl implements EmailService {
     @Autowired
     private TemplateEngine templateEngine;
 
-    @Value("${spring.mail.username}")
+    @Value("${spring.mail.username:default@example.com}")
     private String fromEmail;
 
     @Value("${app.base-url:http://localhost:3000}")
     private String baseUrl;
 
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("EEEE, MMMM d, yyyy 'at' h:mm a");
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("EEEE, MMMM d, yyyy ");
 
     @Async
     @Override
     public void sendEventCreationEmail(String toEmail, Event event) {
+        System.out.println("🚀 STARTING sendEventCreationEmail");
+        System.out.println("📧 To: " + toEmail);
+        System.out.println("📧 From: " + fromEmail);
+        System.out.println("📧 Event: " + event.getName());
+        
         try {
+            // Check if mailSender is available
+            if (mailSender == null) {
+                System.err.println("❌ mailSender is NULL!");
+                return;
+            }
+            
+            System.out.println("📧 Creating MimeMessage...");
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
@@ -52,16 +62,24 @@ public class EmailServiceImpl implements EmailService {
             context.setVariable("creatorName", event.getCreator().getUsername());
             context.setVariable("dashboardUrl", baseUrl + "/dashboard/" + event.getId());
 
+            System.out.println("📧 Processing email template...");
             // Process the HTML template
             String htmlContent = templateEngine.process("event-creation-email", context);
+            System.out.println("📧 Template processed successfully");
 
             helper.setText(htmlContent, true);
 
+            System.out.println("📧 Attempting to send email...");
             mailSender.send(message);
             System.out.println("✅ Event creation email sent successfully to: " + toEmail);
 
         } catch (MessagingException e) {
-            System.err.println("❌ Failed to send event creation email to: " + toEmail);
+            System.err.println("❌ MessagingException - Failed to send event creation email to: " + toEmail);
+            System.err.println("Error details: " + e.getMessage());
+            e.printStackTrace();
+        } catch (Exception e) {
+            System.err.println("❌ General Exception - Failed to send event creation email to: " + toEmail);
+            System.err.println("Error details: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -69,7 +87,20 @@ public class EmailServiceImpl implements EmailService {
     @Async
     @Override
     public void sendRSVPInvitation(String toEmail, Event event, Long rsvpId) {
+        System.out.println("🚀 STARTING sendRSVPInvitation");
+        System.out.println("📧 To: " + toEmail);
+        System.out.println("📧 From: " + fromEmail);
+        System.out.println("📧 Event: " + event.getName());
+        System.out.println("📧 RSVP ID: " + rsvpId);
+        
         try {
+            // Check if mailSender is available
+            if (mailSender == null) {
+                System.err.println("❌ mailSender is NULL!");
+                return;
+            }
+            
+            System.out.println("📧 Creating MimeMessage...");
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
@@ -83,20 +114,28 @@ public class EmailServiceImpl implements EmailService {
             context.setVariable("eventDate", event.getDate().format(DATE_FORMATTER));
             context.setVariable("eventKey", event.getEventKey());
             context.setVariable("creatorName", event.getCreator().getUsername());
-            context.setVariable("acceptUrl", baseUrl + "/api/rsvp/" + rsvpId + "/respond?response=accepted");
-            context.setVariable("declineUrl", baseUrl + "/api/rsvp/" + rsvpId + "/respond?response=declined");
+            context.setVariable("acceptUrl", baseUrl + "/rsvp/" + rsvpId + "/respond/accepted");
+            context.setVariable("declineUrl", baseUrl + "/rsvp/" + rsvpId + "/respond/declined");
             context.setVariable("eventSearchUrl", baseUrl + "/search-event");
 
+            System.out.println("📧 Processing email template...");
             // Process the HTML template
             String htmlContent = templateEngine.process("rsvp-invitation-email", context);
+            System.out.println("📧 Template processed successfully");
 
             helper.setText(htmlContent, true);
 
+            System.out.println("📧 Attempting to send email...");
             mailSender.send(message);
             System.out.println("✅ RSVP invitation sent successfully to: " + toEmail);
 
         } catch (MessagingException e) {
-            System.err.println("❌ Failed to send RSVP invitation to: " + toEmail);
+            System.err.println("❌ MessagingException - Failed to send RSVP invitation to: " + toEmail);
+            System.err.println("Error details: " + e.getMessage());
+            e.printStackTrace();
+        } catch (Exception e) {
+            System.err.println("❌ General Exception - Failed to send RSVP invitation to: " + toEmail);
+            System.err.println("Error details: " + e.getMessage());
             e.printStackTrace();
         }
     }
