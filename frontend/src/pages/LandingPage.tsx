@@ -1,17 +1,15 @@
-import { FaSearch } from 'react-icons/fa';
 import '../styles/LandingPage.css';
-import { useAuth } from '../context/AuthContext';
+//import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
+import { FaTwitter, FaInstagram, FaFacebook } from 'react-icons/fa';
 
-function getStoredUser() {
+/*function getStoredUser() {
   const userJson = localStorage.getItem('user');
   return userJson ? JSON.parse(userJson) : null;
-}
+}*/
 
 // The correct way to declare a functional component with destructured props
 const LandingPage = () => {
-  const { user:contextUser } = useAuth(); 
-  const user = contextUser || getStoredUser();
   
   return (
     <div className="landing-container">
@@ -22,16 +20,6 @@ const LandingPage = () => {
           <div className="hero-content">
             <h2>Simplify Your Gift Planning</h2>
             <p>Create, manage, and track gift lists for all your special occasions.</p>
-            {!user && (
-              <div className="cta-buttons">
-                <div className="search-bar">
-                  <input placeholder="Search for Registry or Gift List"></input>
-                  <button type="submit">
-                    <FaSearch/>
-                  </button>
-                </div>
-              </div>
-            )}
           </div>
         </section>
 
@@ -105,7 +93,33 @@ const LandingPage = () => {
       </main>
 
       <footer className="landing-footer">
-        <p>&copy; 2025 Gift Planner</p>
+        <div className="footer-main">
+          <p>&copy; 2025 Gift Planner</p>
+          <nav className="footer-links">
+            <Link to="/about">About Us</Link>
+            <Link to="/contact">Contact</Link>
+            <Link to="/privacy">Privacy Policy</Link>
+            <Link to="/terms">Terms of Use</Link>
+          </nav>
+        </div>
+        <div className="footer-community">
+          <p>
+            Made with <span style={{color: "#f44336"}}>♥</span> in India by the Gift Planner Team.
+            &nbsp; | &nbsp; 
+            <a href="mailto:support@giftplanner.com" style={{ color: "#fff", textDecoration: "underline" }}>support@giftplanner.com</a>
+          </p>
+          <div className="footer-social">
+            <a href="https://twitter.com/" target="_blank" rel="noopener noreferrer" aria-label="Twitter">
+              <FaTwitter />
+            </a>
+            <a href="https://instagram.com/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+              <FaInstagram />
+            </a>
+            <a href="https://facebook.com/" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+              <FaFacebook />
+            </a>
+          </div>
+        </div>
       </footer>
     </div>
   );
