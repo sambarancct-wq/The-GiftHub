@@ -163,7 +163,7 @@
   margin-top: 28px;
 }
 .cancel-btn {
-  background: #95a5a6;
+  background: #f12929;
   color: white;
   border: none;
   padding: 12px 24px;
@@ -378,4 +378,20 @@ button:focus,
 .view-product-btn:focus {
   outline: 2px solid #667eea;
   outline-offset: 2.5px;
+}
+
+.confirm-btn {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  margin-right: 10px;
+  margin-top: 5px;
+  border-radius: 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.18s;
+}
+.confirm-btn:hover {
+  background: #218838;
 }

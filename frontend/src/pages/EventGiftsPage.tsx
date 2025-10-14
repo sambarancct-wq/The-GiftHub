@@ -57,9 +57,9 @@ const AddGiftForm: React.FC<AddGiftFormProps> = ({ onSubmit, onCancel }) => {
     }));
   };
 
-  const handleImageChange = (e: { target: { files: any[]; }; }) => {
+  /*const handleImageChange = (e: { target: { files: any[]; }; }) => {
     setImageFile(e.target.files?.[0] ?? null);
-  }
+  }*/
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -166,6 +166,8 @@ const AddGiftForm: React.FC<AddGiftFormProps> = ({ onSubmit, onCancel }) => {
 const GiftCard: React.FC<GiftCardProps> = ({ gift,onRemove }) => {
   //const { user } = useAuth();
   const showRemove = user.userId && gift.plannedById === user.userId;
+  const showConfirm = user.userId && gift.plannedById === user.userId;
+
   const getStoreLogo = (store: string) => {
     switch (store) {
       case 'AMAZON':
@@ -175,6 +177,21 @@ const GiftCard: React.FC<GiftCardProps> = ({ gift,onRemove }) => {
       default:
         return 'https://cdn-icons-png.flaticon.com/512/1170/1170678.png';
     }
+  };
+
+  const handleConfirm = () => {
+    fetch(`/api/gifts/${gift.id}/confirm` , {
+      method: 'POST',
+      headers: { 'Content-Type' : 'application/json' },
+      body : JSON.stringify({ userId: user.userId }) 
+    })
+    .then(res => res.json())
+    .then(_data => {
+      window.location.reload();
+    })
+    .catch(err => {
+      alert("Failed to confirm gift: " + err.message)
+    });
   };
 
   return (
@@ -203,7 +220,15 @@ const GiftCard: React.FC<GiftCardProps> = ({ gift,onRemove }) => {
         <div className="gift-planner">📝 <strong>Added by:</strong> {gift.plannedById || '-'}</div>
         <div className="gift-actions">
           {showRemove &&
-            <button className="cancel-btn" onClick={() => onRemove(gift.id)}>Remove</button>}
+            <button className="cancel-btn" onClick={() => onRemove(gift.id)}>
+              Remove
+            </button>
+            }
+          {showConfirm && 
+            <button className='confirm-btn' onClick={handleConfirm}>
+              Confirm Gift
+            </button>
+            }
         </div>
 
         {gift.productUrl && (

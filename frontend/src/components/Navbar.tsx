@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 //import { type User } from '../types';
 import '../styles/Navbar.css';
-import { FaSearch } from 'react-icons/fa';
+//import { FaSearch } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
 
 /*interface NavbarProps {
@@ -20,7 +20,7 @@ const Navbar: React.FC = () => {
   const user = contextUser || getStoredUser();
   console.log("Navbar user:", user);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  //const [searchQuery, setSearchQuery] = useState('');
   const dropdownRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const toggleDropdown = () => setIsDropdownOpen((prev) => !prev);
@@ -31,13 +31,13 @@ const Navbar: React.FC = () => {
     navigate('/');
   };
 
-  const handleSearch = (e: React.FormEvent) => {
+  /*const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
       navigate(`/events?search=${encodeURIComponent(searchQuery)}`);
       setSearchQuery('');
     }
-  };
+  };*/
 
   useEffect(() => {
     const handleOutsideClick = (event: MouseEvent) => {
@@ -71,21 +71,6 @@ const Navbar: React.FC = () => {
           </>
         )}
       </div>
-
-      {user && (
-        <div className="navbar-search">
-          <form className="search-bar" onSubmit={handleSearch}>
-            <input 
-              placeholder="Search for events or gifts..." 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            <button type="submit" className='search-btn'>
-              <FaSearch/>
-            </button>
-          </form>
-        </div>
-      )}
 
       {user && (
         <div className="navbar-user-menu" ref={dropdownRef}>
