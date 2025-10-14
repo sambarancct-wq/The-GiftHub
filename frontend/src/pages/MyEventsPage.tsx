@@ -121,7 +121,7 @@ const EventCard: React.FC<{
   const fetchRSVPStats = async () => {
     try {
       if (!user || !user.userId) return;
-      const response = await fetch(`/events/dashboard/${event.id}?creatorId=${event.creator_id}}`);
+      const response = await fetch(`/events/dashboard/${event.id}?creatorId=${event.creatorId}}`);
       if (response.ok) {
         const data = await response.json();
         setRsvpStats({

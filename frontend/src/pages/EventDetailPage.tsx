@@ -7,7 +7,7 @@ import "../styles/EventDetailPage.css";
 const EventDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  
+
   const [event, setEvent] = useState<Event | null>(null);
   const [gifts, setGifts] = useState<Gift[]>([]);
   const [loading, setLoading] = useState(true);
@@ -18,21 +18,21 @@ const EventDetailPage: React.FC = () => {
     if (id) {
       fetchEventAndGifts();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const fetchEventAndGifts = async () => {
     try {
       setLoading(true);
-      
+
       // Fetch event details
       const eventResponse = await eventAPI.getEventById(parseInt(id!));
       setEvent(eventResponse.data);
-      
+
       // Fetch gifts for this event
       const giftsResponse = await giftAPI.getGiftsByEvent(parseInt(id!));
       setGifts(giftsResponse.data);
-      
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       setError(err.response?.data?.message || "Error loading event");
@@ -54,8 +54,8 @@ const EventDetailPage: React.FC = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'AVAILABLE': return '#28a745';
-      case 'RESERVED': return '#ffc107';
+      case 'PLANNED': return '#28a745';
+      case 'CANCELLED': return '#ffc107';
       case 'PURCHASED': return '#6c757d';
       default: return '#6c757d';
     }
@@ -63,8 +63,8 @@ const EventDetailPage: React.FC = () => {
 
   const getStatusText = (status: string) => {
     switch (status) {
-      case 'AVAILABLE': return 'Available';
-      case 'RESERVED': return 'Reserved';
+      case 'PLANNED': return 'Planned';
+      case 'CANCELLED': return 'Cancelled';
       case 'PURCHASED': return 'Purchased';
       default: return status;
     }
@@ -83,16 +83,28 @@ const EventDetailPage: React.FC = () => {
     return new Date(dateString) >= new Date();
   };
 
+  // Updated filtering for PLANNED/CANCELLED/PURCHASED
   const filteredGifts = gifts.filter(gift => {
     if (giftFilter === "ALL") return true;
     return gift.status === giftFilter;
   });
 
+  // Updated stats for PLANNED/CANCELLED/PURCHASED
   const giftStats = {
     total: gifts.length,
-    available: gifts.filter(g => g.status === 'PLANNED').length,
-    reserved: gifts.filter(g => g.status === 'CANCELLED').length,
+    planned: gifts.filter(g => g.status === 'PLANNED').length,
+    cancelled: gifts.filter(g => g.status === 'CANCELLED').length,
     purchased: gifts.filter(g => g.status === 'PURCHASED').length
+  };
+
+  // Updated isOrganizer for DTO shape
+  const isOrganizer = () => {
+    const userData = localStorage.getItem('user');
+    if (!userData || !event) return false;
+    console.log(userData);
+    console.log(event);
+    const user = JSON.parse(userData);
+    return !!user && event.creatorId && user.userId === event.creatorId;
   };
 
   if (loading) {
@@ -117,14 +129,6 @@ const EventDetailPage: React.FC = () => {
     );
   }
 
-  const isOrganizer = () => {
-    const userData = localStorage.getItem('user');
-    if (!userData) return false;
-    
-    const user = JSON.parse(userData);
-    return !!user && event.creator?.userId && user.userId === event.creator.userId;
-  };
-
   return (
     <div className="event-detail-container">
       {/* Header */}
@@ -132,18 +136,19 @@ const EventDetailPage: React.FC = () => {
         <button className="back-btn" onClick={() => navigate(-1)}>
           &larr; Back
         </button>
-        
+
         <div className="event-title-section">
           <div className="event-type-badge" style={{ backgroundColor: getEventTypeColor(event.type) }}>
-              {typeof event?.type === 'string' ? event.type.toLowerCase() : "unknown"}
+            {typeof event?.type === 'string' ? event.type.toLowerCase() : "unknown"}
           </div>
           <h1>{event.name}</h1>
           <p className="event-description">{event.description}</p>
         </div>
 
+        {/* Organizer can add gift for themselves */}
         {isOrganizer() && (
           <div className="organizer-actions">
-            <Link 
+            <Link
               to={`/add-gift?eventId=${event.id}`}
               className="add-gift-btn"
             >
@@ -162,19 +167,19 @@ const EventDetailPage: React.FC = () => {
             <span className="detail-value">{formatDate(event.date)}</span>
             {!isUpcoming(event.date) && <span className="past-badge">Past Event</span>}
           </div>
-          
+
           {event.location && (
             <div className="detail-item">
               <span className="detail-label">📍 Location:</span>
               <span className="detail-value">{event.location}</span>
             </div>
           )}
-          
+
           <div className="detail-item">
             <span className="detail-label">👤 Organizer:</span>
-            <span className="detail-value">{event.creator?.username}</span>
+            <span className="detail-value">{event.creatorUsername}</span>
           </div>
-          
+
           <div className="detail-item">
             <span className="detail-label">📝 Created:</span>
             <span className="detail-value">
@@ -191,13 +196,13 @@ const EventDetailPage: React.FC = () => {
               <span className="stat-number">{giftStats.total}</span>
               <span className="stat-label">Total Gifts</span>
             </div>
-            <div className="stat-item available">
-              <span className="stat-number">{giftStats.available}</span>
-              <span className="stat-label">Available</span>
+            <div className="stat-item planned">
+              <span className="stat-number">{giftStats.planned}</span>
+              <span className="stat-label">Planned</span>
             </div>
-            <div className="stat-item reserved">
-              <span className="stat-number">{giftStats.reserved}</span>
-              <span className="stat-label">Reserved</span>
+            <div className="stat-item cancelled">
+              <span className="stat-number">{giftStats.cancelled}</span>
+              <span className="stat-label">Cancelled</span>
             </div>
             <div className="stat-item purchased">
               <span className="stat-number">{giftStats.purchased}</span>
@@ -211,27 +216,27 @@ const EventDetailPage: React.FC = () => {
       <div className="gifts-section">
         <div className="gifts-header">
           <h2>Gift Registry ({gifts.length} items)</h2>
-          
+
           <div className="gift-filters">
-            <button 
+            <button
               className={`filter-btn ${giftFilter === 'ALL' ? 'active' : ''}`}
               onClick={() => setGiftFilter('ALL')}
             >
               All
             </button>
-            <button 
-              className={`filter-btn ${giftFilter === 'AVAILABLE' ? 'active' : ''}`}
-              onClick={() => setGiftFilter('AVAILABLE')}
+            <button
+              className={`filter-btn ${giftFilter === 'PLANNED' ? 'active' : ''}`}
+              onClick={() => setGiftFilter('PLANNED')}
             >
-              Available
+              Planned
             </button>
-            <button 
-              className={`filter-btn ${giftFilter === 'RESERVED' ? 'active' : ''}`}
-              onClick={() => setGiftFilter('RESERVED')}
+            <button
+              className={`filter-btn ${giftFilter === 'CANCELLED' ? 'active' : ''}`}
+              onClick={() => setGiftFilter('CANCELLED')}
             >
-              Reserved
+              Cancelled
             </button>
-            <button 
+            <button
               className={`filter-btn ${giftFilter === 'PURCHASED' ? 'active' : ''}`}
               onClick={() => setGiftFilter('PURCHASED')}
             >
@@ -240,61 +245,55 @@ const EventDetailPage: React.FC = () => {
           </div>
         </div>
 
-        {filteredGifts.length === 0 ? (
-          <div className="no-gifts">
-            <h3>No gifts found</h3>
-            <p>
-              {gifts.length === 0 
-                ? "This event doesn't have any gifts yet." 
-                : "No gifts match your current filter."
-              }
-            </p>
-            {isOrganizer() && gifts.length === 0 && (
-              <Link 
-                to={`/add-gift?eventId=${event.id}`}
-                className="add-first-gift-btn"
-              >
-                Add First Gift
-              </Link>
-            )}
+        {/* If organizer, show surprise message */}
+        {isOrganizer() ? (
+          <div className="surprise-message">
+            <h3>🎉 It's a surprise for you!</h3>
+            <p>As the event creator, you can't see the gifts selected by your guests. Enjoy the surprise!</p>
           </div>
         ) : (
-          <div className="gifts-grid">
-            {filteredGifts.map(gift => (
-              <div key={gift.id} className="gift-card">
-                <div className="gift-image">
-                  {gift.image ? (
-                    <img src={gift.image} alt={gift.name} />
-                  ) : (
-                    <div className="gift-placeholder">🎁</div>
-                  )}
-                  <div 
-                    className="status-badge"
-                    style={{ backgroundColor: getStatusColor(gift.status) }}
-                  >
-                    {getStatusText(gift.status)}
-                  </div>
-                </div>
-                
-                <div className="gift-info">
-                  <h4 className="gift-name">{gift.name}</h4>
-                  <p className="gift-recipient">For: {gift.recipient}</p>
-                  <p className="gift-price">${gift.price.toFixed(2)}</p>
-                  
-                  {gift.notes && (
-                    <p className="gift-notes">{gift.notes}</p>
-                  )}
-                  
-                  <div className="gift-actions">
-                    {gift.status === 'PURCHASED' && (
-                      <button className="reserve-btn">Reserve Gift</button>
+          filteredGifts.length === 0 ? (
+            <div className="no-gifts">
+              <h3>No gifts found</h3>
+              <p>
+                {gifts.length === 0
+                  ? "This event doesn't have any gifts yet."
+                  : "No gifts match your current filter."
+                }
+              </p>
+            </div>
+          ) : (
+            <div className="gifts-grid">
+              {filteredGifts.map(gift => (
+                <div key={gift.id} className="gift-card">
+                  <div className="gift-image">
+                    {gift.image ? (
+                      <img src={gift.image} alt={gift.name} />
+                    ) : (
+                      <div className="gift-placeholder">🎁</div>
                     )}
-                    <button className="view-btn">View Details</button>
+                    <div
+                      className="status-badge"
+                      style={{ backgroundColor: getStatusColor(gift.status) }}
+                    >
+                      {getStatusText(gift.status)}
+                    </div>
+                  </div>
+                  <div className="gift-info">
+                    <h4 className="gift-name">{gift.name}</h4>
+                    <p className="gift-recipient">For: {gift.recipient}</p>
+                    <p className="gift-price">${gift.price.toFixed(2)}</p>
+                    {gift.notes && (
+                      <p className="gift-notes">{gift.notes}</p>
+                    )}
+                    <div className="gift-actions">
+                      <button className="view-btn">View Details</button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )
         )}
       </div>
     </div>

@@ -1,6 +1,7 @@
 import { FaSearch } from 'react-icons/fa';
 import '../styles/LandingPage.css';
 import { useAuth } from '../context/AuthContext';
+import { Link } from 'react-router-dom';
 
 function getStoredUser() {
   const userJson = localStorage.getItem('user');
@@ -50,7 +51,9 @@ const LandingPage = () => {
           <h3 className="intro-subtext">
             The ultimate gifting solution for you and your friends and family
           </h3>
-          <button className="cta-btn">Get Started Now</button>
+          <button className="cta-btn">
+            <Link to="/login" className="cta-link">Get Started Now</Link>
+          </button>
         </section>
 
         {/* --- STORES SECTION --- */}

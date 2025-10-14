@@ -187,7 +187,7 @@ const EventListPage: React.FC = () => {
                 )}
 
                 <div className="event-organizer">
-                  <small>Organized by: {event.creator?.email}</small>
+                  <small>Organized by: {event.creatorUsername}</small>
                 </div>
 
                 <div className="event-actions">

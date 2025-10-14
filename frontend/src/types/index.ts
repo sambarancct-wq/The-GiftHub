@@ -13,7 +13,8 @@ export interface Event {
   name: string;
   date: string;
   creator?:User;
-  creator_id:number;
+  creatorId:number;
+  creatorUsername:string;
   event_key:string;
   description: string;
   location?: string;

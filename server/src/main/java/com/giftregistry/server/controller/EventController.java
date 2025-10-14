@@ -1,5 +1,6 @@
 package com.giftregistry.server.controller;
 
+import com.giftregistry.server.dto.EventDTO;
 import com.giftregistry.server.model.Event;
 import com.giftregistry.server.model.RSVP;
 import com.giftregistry.server.model.User;
@@ -19,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/events")
@@ -36,6 +38,30 @@ public class EventController {
 
     @Autowired
     private EmailService emailService;
+
+    private EventDTO mapEventToDTO(Event event) {
+        EventDTO dto = new EventDTO();
+        dto.setId(event.getId());
+        dto.setName(event.getName());
+        dto.setDate(event.getDate());
+        dto.setEventKey(event.getEventKey());
+        dto.setDescription(event.getDescription());
+        dto.setLocation(event.getLocation());
+        dto.setType(event.getType() != null ? event.getType().name() : null);
+        dto.setCreatedAt(event.getCreatedAt());
+        dto.setUpdatedAt(event.getUpdatedAt());
+        if (event.getCreator() != null) {
+            dto.setCreatorId(event.getCreator().getId());
+            dto.setCreatorUsername(event.getCreator().getUsername());
+        }
+        if (event.getGifts() != null && !event.getGifts().isEmpty()) {
+            dto.setGiftIds(event.getGifts().stream()
+                .map(g -> g.getId())
+                .toList());
+        }
+        return dto;
+    }
+
     /**
      * Create a new event
      */
@@ -66,11 +92,11 @@ public class EventController {
         
             emailService.sendEventCreationEmail(creatorUser.getEmail(), savedEvent);
 
+            EventDTO dto = mapEventToDTO(savedEvent);
             Map<String, Object> response = new HashMap<>();
             response.put("message", "Event created successfully! Check your email for the event key.");
-            response.put("event", savedEvent);
+            response.put("event", dto);
             response.put("eventKey", savedEvent.getEventKey());
-            
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
 
         } catch (Exception e) {
@@ -106,8 +132,10 @@ public class EventController {
             long declinedCount = rsvpRepository.countByEventAndStatus(event, RSVP.RSVPStatus.DECLINED);
             long pendingCount = rsvpRepository.countByEventAndStatus(event, RSVP.RSVPStatus.PENDING);
 
+            EventDTO dto = mapEventToDTO(event);
+
             Map<String, Object> dashboard = new HashMap<>();
-            dashboard.put("event", event);
+            dashboard.put("event", dto);
             dashboard.put("attendingCount", attendingCount);
             dashboard.put("declinedCount", declinedCount);
             dashboard.put("pendingCount", pendingCount);
@@ -126,9 +154,9 @@ public class EventController {
      * Send RSVP invitations
      */
     @PostMapping("/{eventId}/invite")
-public ResponseEntity<?> sendInvitations(@PathVariable Long eventId, 
-                                       @RequestParam Long creatorId,
-                                       @RequestBody List<String> guestEmails) {
+    public ResponseEntity<?> sendInvitations(@PathVariable Long eventId, 
+                                        @RequestParam Long creatorId,
+                                        @RequestBody List<String> guestEmails) {
     try {
         Optional<Event> eventOptional = eventRepository.findById(eventId);
         if (eventOptional.isEmpty()) {
@@ -192,10 +220,11 @@ public ResponseEntity<?> sendInvitations(@PathVariable Long eventId,
         try {
             Optional<Event> event = eventRepository.findByEventKey(eventKey);
             if (event.isPresent()) {
-                // Don't return creator information to guests
                 Event eventResponse = event.get();
                 eventResponse.setCreator(null); // Hide creator details
-                return ResponseEntity.ok(eventResponse);
+                EventDTO dto = mapEventToDTO(eventResponse);
+                dto.setCreatorId(null);
+                return ResponseEntity.ok(dto);
             } else {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(Map.of("message", "Event not found"));
@@ -245,13 +274,11 @@ public ResponseEntity<?> sendInvitations(@PathVariable Long eventId,
     public ResponseEntity<?> getAllPublicEvents() {
         try {
             List<Event> events = eventRepository.findAll();
-            for (Event event : events) {
-                if (event.getCreator() != null) {
-                    event.getCreator().getUsername();
-                }
-            }
-            System.out.println("📋 Found " + events.size() + " public events");
-            return ResponseEntity.ok(events);
+            List<EventDTO> dtos = events.stream()
+                        .map(this::mapEventToDTO)
+                        .collect(Collectors.toList());
+            System.out.println("📋 Found " + dtos.size() + " public events");
+            return ResponseEntity.ok(dtos);
         } catch (Exception e) {
             System.err.println("❌ Error fetching public events: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -266,8 +293,11 @@ public ResponseEntity<?> sendInvitations(@PathVariable Long eventId,
     public ResponseEntity<?> getEventsByCreator(@PathVariable Long creatorId) {
         try {
             List<Event> events = eventRepository.findByCreatorId(creatorId);
-            System.out.println("📋 Found " + events.size() + " events for creator: " + creatorId);
-            return ResponseEntity.ok(events);
+            List<EventDTO> dtos = events.stream()
+                    .map(this::mapEventToDTO)
+                    .collect(Collectors.toList());
+            System.out.println("📋 Found " + dtos.size() + " events for creator: " + creatorId);
+            return ResponseEntity.ok(dtos);
         } catch (Exception e) {
             System.err.println("❌ Error fetching creator events: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -285,8 +315,8 @@ public ResponseEntity<?> sendInvitations(@PathVariable Long eventId,
             if (eventOpt.isPresent()) {
                 Event event = eventOpt.get();
                 System.out.println("📖 Found event: " + event.getName());
-                event.getCreator().getUsername();
-                return ResponseEntity.ok(event);
+                EventDTO dto = mapEventToDTO(event);
+                return ResponseEntity.ok(dto);
             } else {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(Map.of("message", "Event not found"));
@@ -328,12 +358,13 @@ public ResponseEntity<?> sendInvitations(@PathVariable Long eventId,
             event.setUpdatedAt(LocalDateTime.now());
             
             Event updatedEvent = eventRepository.save(event);
+            EventDTO dto = mapEventToDTO(updatedEvent);
             
             System.out.println("✅ Event updated successfully: " + updatedEvent.getName());
 
             return ResponseEntity.ok(Map.of(
                 "message", "Event updated successfully!",
-                "event", updatedEvent
+                "event", dto
             ));
 
         } catch (Exception e) {
@@ -392,9 +423,11 @@ public ResponseEntity<?> getEventsByCategory(@PathVariable String category) {
 
         // 2. Call the correct, type-safe repository method
         List<Event> events = eventRepository.findByType(eventType);
-        
-        System.out.println("📋 Found " + events.size() + " events in category: " + category);
-        return ResponseEntity.ok(events);
+        List<EventDTO> dtos = events.stream()
+                    .map(this::mapEventToDTO)
+                    .collect(Collectors.toList());
+        System.out.println("📋 Found " + dtos.size() + " events in category: " + category);
+        return ResponseEntity.ok(dtos);
 
     } catch (Exception e) {
         System.err.println("❌ Error fetching events by category: " + e.getMessage());
@@ -411,8 +444,11 @@ public ResponseEntity<?> getEventsByCategory(@PathVariable String category) {
         try {
             LocalDate today = LocalDate.now();
             List<Event> events = eventRepository.findByDateAfter(today);
-            System.out.println("📋 Found " + events.size() + " upcoming events");
-            return ResponseEntity.ok(events);
+            List<EventDTO> dtos = events.stream()
+                    .map(this::mapEventToDTO)
+                    .collect(Collectors.toList());    
+            System.out.println("📋 Found " + dtos.size() + " upcoming events");
+            return ResponseEntity.ok(dtos);
         } catch (Exception e) {
             System.err.println("❌ Error fetching upcoming events: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -427,8 +463,11 @@ public ResponseEntity<?> getEventsByCategory(@PathVariable String category) {
     public ResponseEntity<?> searchEvents(@RequestParam String query) {
         try {
             List<Event> events = eventRepository.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(query, query);
-            System.out.println("🔍 Found " + events.size() + " events matching: " + query);
-            return ResponseEntity.ok(events);
+            List<EventDTO> dtos = events.stream()
+                    .map(this::mapEventToDTO)
+                    .collect(Collectors.toList());
+            System.out.println("🔍 Found " + dtos.size() + " events matching: " + query);
+            return ResponseEntity.ok(dtos);
         } catch (Exception e) {
             System.err.println("❌ Error searching events: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

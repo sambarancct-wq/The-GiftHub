@@ -66,7 +66,6 @@ const Navbar: React.FC = () => {
           </div>
         ) : (
           <>
-            <Link to="/events">Browse Events</Link>
             <Link to="/login">Login</Link>
             <Link to="/register">Register</Link>
           </>
