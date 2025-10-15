@@ -8,6 +8,7 @@ import EventListPage from './pages/EventListPage';
 import EventDetailPage from './pages/EventDetailPage';
 import CreateEventPage from './pages/CreateEventPage';
 import MyEventsPage from './pages/MyEventsPage';
+import ProfilePage from './components/ProfilePage';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
 // NEW COMPONENT IMPORTS
@@ -105,7 +106,10 @@ function AppContent() {
             </ProtectedRoute>
           } 
         />
-                
+        <Route
+          path='/profile'
+          element={<ProfilePage/>}
+        />
         {/* Redirect unknown routes */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

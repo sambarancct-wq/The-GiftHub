@@ -3,7 +3,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-//import { useAuth } from '../context/AuthContext';
 import '../styles/EventGiftsPage.css';
 
 const user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -47,7 +46,7 @@ const AddGiftForm: React.FC<AddGiftFormProps> = ({ onSubmit, onCancel }) => {
     productUrl: '',
     store: 'OTHER'
   });
-  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imageFile] = useState<File | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -57,9 +56,6 @@ const AddGiftForm: React.FC<AddGiftFormProps> = ({ onSubmit, onCancel }) => {
     }));
   };
 
-  /*const handleImageChange = (e: { target: { files: any[]; }; }) => {
-    setImageFile(e.target.files?.[0] ?? null);
-  }*/
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -164,7 +160,6 @@ const AddGiftForm: React.FC<AddGiftFormProps> = ({ onSubmit, onCancel }) => {
 
 // GiftCard Component
 const GiftCard: React.FC<GiftCardProps> = ({ gift,onRemove }) => {
-  //const { user } = useAuth();
   const showRemove = user.userId && gift.plannedById === user.userId;
   const showConfirm = user.userId && gift.plannedById === user.userId;
 
@@ -249,7 +244,6 @@ const GiftCard: React.FC<GiftCardProps> = ({ gift,onRemove }) => {
 // Main EventGiftsPage Component
 const EventGiftsPage: React.FC = () => {
   const { eventId } = useParams<{ eventId: string }>();
-  //const { user } = useAuth();
   const [event, setEvent] = useState<any>(null);
   const [gifts, setGifts] = useState<Gift[]>([]);
   const [showAddGift, setShowAddGift] = useState(false);

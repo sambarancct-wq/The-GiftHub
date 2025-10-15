@@ -41,7 +41,7 @@ const EventListPage: React.FC = () => {
       filtered = filtered.filter(event =>
         event.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         event.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (event.location && event.location.toLowerCase().includes(searchTerm.toLowerCase()))
+        (event.location?.toLowerCase().includes(searchTerm.toLowerCase()))
       );
     }
 
@@ -103,7 +103,7 @@ const EventListPage: React.FC = () => {
     <div className="event-list-container">
       <div className="event-list-header">
         <h1>Browse Events</h1>
-        <p>Discover amazing events and find the perfect gifts</p>
+        <p>Discover amazing events and see what is going around in the world</p>
       </div>
 
       {/* Filters and Search */}
