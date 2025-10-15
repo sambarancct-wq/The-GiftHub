@@ -16,6 +16,7 @@ import EventDashboard from './pages/EventDashboard';
 import FindEventPage from './pages/FindEventPage';
 import RSVPResponsePage from './pages/RSVPResponsePage';
 import EventGiftsPage from './pages/EventGiftsPage';
+import EditProfilePage from './pages/EditProfilePage';
 
 function getStoredUser() {
   const userJson = localStorage.getItem('user');
@@ -112,6 +113,7 @@ function AppContent() {
         />
         {/* Redirect unknown routes */}
         <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="/edit-profile" element={<EditProfilePage />} />
       </Routes>
     </>
   );

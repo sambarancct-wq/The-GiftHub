@@ -1,0 +1,143 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background: #f6f7fb;
+}
+
+/* Make sure body takes full height for flex parent */
+body {
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* Make the profile container use full viewport height */
+.edit-profile-container {
+  min-height: 100vh;
+  height: 100vh;
+  width: 100vw;
+  /* If you want to allow scrolling when content is taller, remove height: 100vh; */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f6f7fb !important;
+}
+
+.edit-profile-card {
+  background: #fff;
+  border-radius: 18px;
+  padding: 2.5rem 2.5rem 2rem 2.5rem;
+  box-shadow: 0 3px 14px 0 rgba(44, 38, 62, 0.16);
+  max-width: 700px;
+  width: 100%;
+  text-align: center;
+}
+
+.edit-profile-card h2 {
+  margin-bottom: 18px;
+  color: #363045;
+  font-size: 2rem;
+}
+
+/* ----- Two-Column Flex Layout ----- */
+.edit-profile-form {
+  width: 100%;
+}
+
+.edit-profile-columns {
+  display: flex;
+  gap: 36px;
+  justify-content: center;
+  align-items: flex-start;
+  margin-bottom: 18px;
+}
+
+.profile-column {
+  flex: 1;
+  min-width: 230px;
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ----- Field Styling ----- */
+.profile-column label {
+  margin-bottom: 2px;
+  font-weight: 500;
+  color: #64627e;
+  text-align: left;
+  font-size: 1rem;
+}
+.profile-column input {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #d2d2db;
+  border-radius: 7px;
+  font-size: 1rem;
+  margin-bottom: 2px;
+  background: #fafbfe;
+  transition: border 0.18s;
+}
+.profile-column input:focus {
+  border: 1.5px solid #f9a825;
+  outline: none;
+}
+
+.edit-profile-avatar {
+  width: 71px;
+  height: 71px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+  margin: 10px 0 6px 0;
+  border: 2px solid #f9a825;
+  box-shadow: 0 2px 9px 0 rgba(249, 168, 37, 0.15);
+}
+
+/* ----- Button & Message ----- */
+.edit-profile-btn {
+  background: #f9a825;
+  color: #fff;
+  border: none;
+  padding: 0.67rem 1.6rem;
+  font-size: 1rem;
+  border-radius: 16px;
+  cursor: pointer;
+  margin-top: 16px;
+  transition: background 0.19s;
+  width: 58%;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+}
+.edit-profile-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+.edit-profile-btn:hover:not(:disabled) {
+  background: #e68900;
+}
+
+.edit-profile-message {
+  margin-top: 18px;
+  font-size: 1rem;
+  color: #28a745;
+}
+
+/* --- Responsive Design (Stack columns vertically at ≤900px) --- */
+@media (max-width: 900px) {
+  .edit-profile-columns {
+    flex-direction: column;
+    gap: 0;
+  }
+  .profile-column {
+    max-width: none;
+    margin-bottom: 18px;
+  }
+  .edit-profile-btn {
+    width: 100%;
+  }
+}

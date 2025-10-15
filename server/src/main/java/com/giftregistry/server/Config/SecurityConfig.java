@@ -37,7 +37,8 @@ public class SecurityConfig {
                     new AntPathRequestMatcher("/api/users"),
                     new AntPathRequestMatcher("/api/users/**"),
                     new AntPathRequestMatcher("/api/rsvp/**"),
-                    new AntPathRequestMatcher("/api/event/**")
+                    new AntPathRequestMatcher("/api/event/**"),
+                    new AntPathRequestMatcher("/api/users/**")
                 ).permitAll() // Allow all API endpoints without authentication
                 .anyRequest().authenticated() // All other requests need authentication
             );

@@ -18,7 +18,7 @@ const LandingPage = () => {
         {/* --- HERO SECTION --- */}
         <section className="hero-section">
           <div className="hero-content">
-            <h2>Simplify Your Gift Planning</h2>
+            <h2>Simplify Your Event Planning</h2>
             <p>Create, manage, and track gift lists for all your special occasions.</p>
           </div>
         </section>

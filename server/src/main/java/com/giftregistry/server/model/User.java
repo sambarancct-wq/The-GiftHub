@@ -4,9 +4,10 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-//import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name = "users")
@@ -24,7 +25,22 @@ public class User {
     
     @Column(nullable = false)
     private String password;
+
+    @Column(name = "name")
+    private String name;
+
+    @Column(name = "location")
+    private String location;
     
+    @Column(name = "image", columnDefinition = "TEXT")
+    private String image; 
+
+    @ElementCollection
+    @CollectionTable(name = "user_social_links", joinColumns = @JoinColumn(name = "user_id"))
+    @MapKeyColumn(name = "platform")
+    @Column(name = "link")
+    private Map<String,String> socialLinks = new HashMap<>();
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
     
@@ -69,6 +85,18 @@ public class User {
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
     
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
+    public String getLocation() { return location; }
+    public void setLocation(String location) { this.location = location; }
+
+    public String getImage() { return image; }
+    public void setImage(String image) { this.image = image; }
+
+    public Map<String, String> getSocialLinks() { return socialLinks; }
+    public void setSocialLinks(Map<String, String> socialLinks) { this.socialLinks = socialLinks; }
+
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
     

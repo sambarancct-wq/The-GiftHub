@@ -69,7 +69,13 @@ public class AuthController {
                 return ResponseEntity.badRequest().body(response);
             }
 
+            user.setName(null);
+            user.setLocation(null);
+            user.setImage(null);
+            user.setSocialLinks(new HashMap<>());
+
             User savedUser = userRepository.save(user);
+            
             Map<String, Object> response = new HashMap<>();
             response.put("message", "User registered successfully");
             response.put("userId", savedUser.getId());
@@ -84,4 +90,52 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
+
+    @PutMapping("/users/{userId}/edit")
+    public ResponseEntity<?> editProfile(@PathVariable Long userId, @RequestBody Map<String, Object> updateFields) {
+        Optional<User> userOpt = userRepository.findById(userId);
+        if (userOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("Message", "User not found"));
+        }
+
+        User user = userOpt.get();
+
+        if (updateFields.containsKey("name")) {
+            user.setName((String) updateFields.get("name"));
+        }
+        if (updateFields.containsKey("location")) {
+            user.setLocation((String) updateFields.get("location"));
+        }
+        if (updateFields.containsKey("image"))
+            user.setImage((String) updateFields.get("image"));
+        if (updateFields.containsKey("socialLinks"))
+            user.setSocialLinks((Map<String, String>) updateFields.get("socialLinks"));
+        
+        userRepository.save(user);
+
+        return ResponseEntity.ok(Map.of("Message", "Profile update successfully"));
+    }
+
+    @GetMapping("/users/{id}")
+    public ResponseEntity<?> getUserById(@PathVariable Long id) {
+        Optional<User> userOpt = userRepository.findById(id);
+        if (userOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("message", "User not found"));
+        }
+        // Only allow users to fetch their own profile
+        // For now, you can allow open access if there is no authentication mechanism
+        User user = userOpt.get();
+        // Optionally, return a DTO instead of the entity
+        Map<String, Object> response = new HashMap<>();
+        response.put("userId", user.getId());
+        response.put("username", user.getUsername());
+        response.put("email", user.getEmail());
+        response.put("name", user.getName());
+        response.put("location", user.getLocation());
+        response.put("image", user.getImage());
+        response.put("socialLinks", user.getSocialLinks());
+        return ResponseEntity.ok(response);
+    }
+
 }

@@ -41,6 +41,19 @@ export const authAPI = {
     api.put(`/users/${userId}/upgrade-to-organizer`),
 };
 
+export const userAPI = {
+  // Fetch profile info
+  getProfile: (userId: number) => api.get(`/users/${userId}`),
+
+  // Edit profile (new fields: name, location, image, socialLinks)
+  editProfile: (userId: number, profileData: {
+    name?: string,
+    location?: string,
+    image?: string,
+    socialLinks?: { [key: string]: string }
+  }) => api.put(`/users/${userId}/edit`, profileData),
+};
+
 export const eventAPI = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   createEvent: (eventData: any, creatorId: number) => 
