@@ -99,6 +99,6 @@ Make sure you have installed:
 
 👨‍💻 Author
 
-Sambaran Banerjee
-Manoj Nath
-Dharani Kumar
+Sambaran Banerjee/n
+Manoj Nath/n
+Dharani Kumar/n
