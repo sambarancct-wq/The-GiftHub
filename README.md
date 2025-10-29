@@ -99,5 +99,6 @@ Make sure you have installed:
 
 👨‍💻 Author
 
-Manoj Nath
 Sambaran Banerjee
+Manoj Nath
+Dharani Kumar
