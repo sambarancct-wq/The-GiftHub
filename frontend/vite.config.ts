@@ -3,6 +3,8 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
+  // This 'base' line fixes 404/MIME errors on Render
+  base: '/', 
   server: {
     port: 3000,
     proxy: {
