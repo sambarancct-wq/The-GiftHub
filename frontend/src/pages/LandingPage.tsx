@@ -1,16 +1,36 @@
 import '../styles/LandingPage.css';
-//import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
 import { FaTwitter, FaInstagram, FaFacebook } from 'react-icons/fa';
 
-/*function getStoredUser() {
-  const userJson = localStorage.getItem('user');
-  return userJson ? JSON.parse(userJson) : null;
-}*/
+// --- IMAGE IMPORTS (Required for Vite Deployment) ---
+import giftImg from '../assets/gift.png';
+import giftListImg from '../assets/giftlist.png';
 
-// The correct way to declare a functional component with destructured props
+// Import store logos explicitly
+import amazonLogo from '../assets/Amazon.png';
+import ikeaLogo from '../assets/ikea.png';
+import firstcryLogo from '../assets/firstcry.png';
+import homecentreLogo from '../assets/homecentre.png';
+import nicobarLogo from '../assets/nicobar.png';
+import mothercareLogo from '../assets/mothercare.png';
+import hauskinderLogo from '../assets/hauskinder.png';
+import hmLogo from '../assets/hm.png';
+import flipkartLogo from '../assets/flipkart.png';
+
+// Map keys to the imported images
+const storeLogos: { [key: string]: string } = {
+  "Amazon": amazonLogo,
+  "ikea": ikeaLogo,
+  "firstcry": firstcryLogo,
+  "homecentre": homecentreLogo,
+  "nicobar": nicobarLogo,
+  "mothercare": mothercareLogo,
+  "hauskinder": hauskinderLogo,
+  "hm": hmLogo,
+  "flipkart": flipkartLogo
+};
+
 const LandingPage = () => {
-  
   return (
     <div className="landing-container">
       <main className="landing-main">
@@ -28,11 +48,13 @@ const LandingPage = () => {
           <h2>Gifting made easy for everyone</h2>
           <div className="intro-cards">
             <div className="intro-card">
-              <img src="../src/assets/gift.png" alt="Gift" />
+              {/* Updated to use imported variable */}
+              <img src={giftImg} alt="Gift" />
               <p>Make it easy for your friends and family to get you the perfect gifts</p>
             </div>
             <div className="intro-card">
-              <img src="../src/assets/giftlist.png" alt="Gift List" />
+              {/* Updated to use imported variable */}
+              <img src={giftListImg} alt="Gift List" />
               <p>Create a gift list to get the gifts you really really want</p>
             </div>
           </div>
@@ -56,10 +78,10 @@ const LandingPage = () => {
                 </p>
               </div>
               <div className="stores-grid">
-                {["Amazon", "ikea", "firstcry", "homecentre", "nicobar", 
-                  "mothercare", "hauskinder", "hm", "flipkart"].map((store) => (
+                {Object.keys(storeLogos).map((store) => (
                   <div key={store} className="store-card">
-                    <img src={`../src/assets/${store}.png`} alt={store} />
+                    {/* Access image from the map using the key */}
+                    <img src={storeLogos[store]} alt={store} />
                   </div>
                 ))}
               </div>
