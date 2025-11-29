@@ -1,7 +1,10 @@
-// src/services/api.ts
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:8080/api';
+// CHANGE THIS BLOCK
+// -----------------------------------------------------------------------------
+// If VITE_API_URL is set (in Render), use it. Otherwise, use localhost.
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
+// -----------------------------------------------------------------------------
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -10,7 +13,7 @@ const api = axios.create({
   },
 });
 
-// For file uploads, we'll create a separate instance without Content-Type header
+// For file uploads
 const apiMultipart = axios.create({
   baseURL: API_BASE_URL,
   headers: {
@@ -31,21 +34,18 @@ export const giftAPI = {
   purchaseGift: (id: number) => api.put(`/gifts/${id}/purchase`),
 };
 
-// Auth API calls remain the same
+// Auth API calls
 export const authAPI = {
   login: (credentials: { email: string; password: string }) => 
     api.post('/login', credentials),
-  register: (userData: { username: string; email: string; password: string }) => // UPDATED
+  register: (userData: { username: string; email: string; password: string }) => 
     api.post('/register', userData), 
   upgradeToOrganizer: (userId: number) => 
     api.put(`/users/${userId}/upgrade-to-organizer`),
 };
 
 export const userAPI = {
-  // Fetch profile info
   getProfile: (userId: number) => api.get(`/users/${userId}`),
-
-  // Edit profile (new fields: name, location, image, socialLinks)
   editProfile: (userId: number, profileData: {
     name?: string,
     location?: string,
@@ -58,7 +58,7 @@ export const eventAPI = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   createEvent: (eventData: any, creatorId: number) => 
     api.post(`/events?creatorId=${creatorId}`, eventData),
-  
+   
   getEventsByCreator: (creatorId: number) =>{
     if (!creatorId || creatorId <= 0) {
       throw new Error('Invalid creator ID');
@@ -67,12 +67,12 @@ export const eventAPI = {
   },
 
   getAllPublicEvents: () => api.get('/events/public'),
-  
+   
   getEventById: (id: number) => api.get(`/events/${id}`),
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   updateEvent: (id: number, eventData: any) => api.put(`/events/${id}`, eventData),
-  
+   
   deleteEvent: (id: number) => api.delete(`/events/${id}`),
 
   getRSVPStats: (eventId: number, creatorId: number) => {
@@ -82,6 +82,5 @@ export const eventAPI = {
     return api.get(`/events/dashboard/${eventId}?creatorId=${creatorId}`);
   },
 };
-
 
 export default api;
